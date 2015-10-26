@@ -1,0 +1,59 @@
+<div ng-controller="WilzCtrl">
+	<ion-view>
+	
+	<ion-content>
+	<div class="">
+		<h1 class="title-header">Hola {{nombreUsuario}}</h1>
+	</div>
+	<div class="">
+		<h2 class="title-subheader">{{comunidadUsuario}}</h2>
+	</div>
+	
+	<div class="card">
+		<div class="item item-text-wrap">
+			<h3 class = "title-card">Wilz Bici</h3>
+			<div ng-show = "hayServiciosBici()" >
+				<div class = "servicios-div" ng-repeat="servicio in serviciosBici" >
+					<div class = "row">
+						<div class = "col descripcion-servicios-div">
+							<span class = "titulo-servicio">{{servicio.origen}} - {{servicio.destino}}</span>
+							<span class = "fecha-icon icon ion-android-calendar"></span>
+							<span class = "fecha-label"> {{servicio.fecha.dia}}{{servicio.fecha.mes}}</span>
+							<span class = "fecha-icon icon ion-android-time"></span>
+							<span class = "fecha-label"> {{servicio.fecha.hora}}:{{servicio.fecha.min}}AM</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<span ng-show="!hayServiciosBici()">No te has unido a ninguna caravana.</span>
+			
+			<a class="button button-block button-positive" ui-sref = "app.caravanas">
+				Ver caravanas
+			</a>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="item item-text-wrap">
+			<h3 class = "title-card">Wilz Carro</h3>
+			No estás inscrito en ningún viaje.
+			<button class="button button-block button-positive">
+				Ver viajes
+			</button>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="item item-text-wrap">
+			<h3 class = "title-card">Wilz Van</h3>
+			No has aparatado tu cupo en ninguna ruta.
+			<button class="button button-block button-positive">
+				Ver rutas
+			</button>
+		</div>
+	</div>
+
+</ion-content>
+</ion-view>
+</div>
