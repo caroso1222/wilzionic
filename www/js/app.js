@@ -261,6 +261,26 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
+  .state('app.rutas', {
+    url: '/rutas',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/rutas.html',
+        controller: 'RutasCtrl'
+      }
+    }
+  })
+
+  .state('app.viajes', {
+    url: '/viajes',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/viajes.html',
+        controller: 'ViajesCtrl'
+      }
+    }
+  })
+
   .state('app.single', {
     url: '/playlists/:playlistId',
     views: {

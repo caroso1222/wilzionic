@@ -94,7 +94,6 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ProfileCtrl',function($scope,$stateParams, ProfileService){
-  console.log("EMPIEZO PROFILE");
   var nombreUsuario = ProfileService.getNombreUsuario().split(" ")[0];
   var comunidad = ProfileService.getComunidad();
   $scope.nombreUsuario = nombreUsuario;
@@ -240,4 +239,53 @@ $ionicModal.fromTemplateUrl('contact-modal.html', {
 
 
 
+
+.controller('RutasCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
+
+  $scope.rutas = []
+
+
+  $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+  var req = {
+   method: 'GET',
+   xhrFields: { withCredentials: true },
+   url: ProfileService.getURL().concat("/api2/rutas/"),
+   headers: {
+     'Content-Type': "application/json",
+     'Authorization':"Token ".concat(ProfileService.getUserKey())
+   },
+   data: {}
+ }
+
+ $http(req).then(function successCallback(response){
+  var lasRutas = angular.fromJson(response.data);
+  for(var i = 0;i<lasRutas.length;i++){
+
+    $scope.rutas.push({id:lasRutas[i].id,
+      nombre:lasRutas[i].nombre,
+      origen:lasRutas[i].origen,
+      destino:lasRutas[i].destino,
+      ruta:lasRutas[i].ruta,
+      costo:lasRutas[i].costo});
+  }
+  return response.data;
+}, function errorCallback(response){
+  $ionicLoading.hide();
+  return response.data;
+});
+
+$ionicModal.fromTemplateUrl('contact-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal
+  })  
+
+
+})
+
+
+
+.controller('ViajesCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
+})
 

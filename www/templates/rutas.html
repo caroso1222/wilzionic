@@ -1,0 +1,29 @@
+<ion-view view-title="Rutas">
+  <ion-content>
+     	<div class="card" ng-repeat="ruta in rutas" href="#/app/rutas/{{ruta.id}}">
+     		<div class="item item-text-wrap">
+				<div class = "row">
+					<div class = "col col-25 fecha-div">
+						<span class = "costo-ruta">{{ ruta.costo | currency:"$":0:".":"." }}</span>
+						<span class = "costo-descr">Costo/mes</span>
+					</div>
+					<div class = "col col-75">
+						<div class = "recorrido-div">
+							<div class = "div-origen">
+								<div class = "bullet-recorrido"></div>
+								<span class = "label-recorrido"> {{ruta.origen}}</span>
+							</div>
+							<div class = "bullet-recorrido"></div>
+							<span class = "label-recorrido"> {{ruta.destino}}</span>
+							<div class = "small-line line-1"></div>
+							<div class = "small-line line-2"></div>
+						</div>
+					</div>
+				</div>
+        <div class = "ruta-van-div">
+          {{ruta.ruta}}
+        </div>
+			</div>
+		</div>
+  </ion-content>
+</ion-view>
