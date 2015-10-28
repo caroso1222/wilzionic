@@ -1,6 +1,6 @@
 <ion-view view-title="Caravanas">
   <ion-content>
-     	<div class="card" ng-repeat="caravana in caravanas" href="#/app/caravanas/{{caravana.id}}">
+     	<div class="card" ng-repeat="caravana in caravanas" >
      		<div class="item item-text-wrap">
      			<div class = "row" ng-show = "estaInscritoEnCaravana(caravana.id)">
      				<div class = "col inscrito-div">
@@ -25,7 +25,7 @@
 						</div>
 					</div>
 				</div>
-				<a class="button button-block button-positive" ng-click="openModal(caravana.id,caravana.origen,caravana.destino)" ng-disabled="estaInscritoEnCaravana(caravana.id)">
+				<a class="button button-block button-wilz" ng-click="openModal(caravana.id,caravana.origen,caravana.destino)" ng-disabled="estaInscritoEnCaravana(caravana.id)">
 					Quiero unirme
 				</a>
 			</div>

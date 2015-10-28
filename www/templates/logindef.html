@@ -1,6 +1,9 @@
 <ion-view>
 <ion-content>
 <div class="list list-inset">
+	<div class = "img-login">
+	<img src="./img/logo-1.png">
+	</div>
 	<form ng-submit="doLogin()">
 		<label class="item item-input">
 			<input type="text" placeholder="Email" ng-model="loginData.email">
@@ -8,11 +11,17 @@
 		<label class="item item-input">
 			<input type="password" placeholder="Contraseña" ng-model="loginData.password">
 		</label>
-		<button class="button button-block button-positive" type="submit">Entrar</button>
+		<button class="button button-block button-wilz" type="submit">Entrar</button>
 	</form>
-	<div class = "row">
-		<div class = "col" ng-style="usuarioIncorrecto">Usuario o contraseña incorrecta	</div>
+
+	<div class = "row error-lbl">
+		<div class = "col " ng-style="usuarioIncorrecto" >Usuario o contraseña incorrecta	</div>
 	</div>
+
+	<div class = "lbl-signup">
+    <a href="" ui-sref = "signup">Crea tu cuenta</a>
+	</div>
+	
 </div>
 </ion-content>
 </ion-view>

@@ -7,8 +7,10 @@
 angular.module('starter', ['ionic', 'starter.controllers'])
 
 .service('ProfileService',function($http){
+  //var server_url = "http://192.168.0.3:8000"
   //var server_url = "http://localhost:8000"
-  var server_url = "http://felizcumplemagda.com"
+  //var server_url = "http://felizcumplemagda.com"
+  var server_url = "http://wilzapi.caroso1222.webfactional.com"
   var nombreUsuario = "";
   var celUsuario = "";
   var idComunidad = "";
@@ -54,7 +56,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
      data: { }
    }
 
-    caravanasUsuario = [];
+   caravanasUsuario = [];
    return $http(req).then(function(response){
     caravanas = angular.fromJson(response.data);
     for (var i = 0; i < caravanas.length; i++){
@@ -67,57 +69,57 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
  function darFechaEnArreglo(fecha){
   var elDia = fecha.substring(8,10);
-    var elMes = fecha.substring(5,7);
-    var laHora = fecha.substring(11,13);
-    var losMin = fecha.substring(14,16);
-    var salida = [];
-    salida.push({dia:elDia,hora:laHora,min:losMin,mes:convertirMesALetras(elMes)});
-    return salida;
- }
+  var elMes = fecha.substring(5,7);
+  var laHora = fecha.substring(11,13);
+  var losMin = fecha.substring(14,16);
+  var salida = [];
+  salida.push({dia:elDia,hora:laHora,min:losMin,mes:convertirMesALetras(elMes)});
+  return salida;
+}
 
- this.convertirMesALetras = function(num){
+this.convertirMesALetras = function(num){
   return convertirMesALetras(num);
- }
+}
 
 
- function convertirMesALetras(num){
+function convertirMesALetras(num){
   if(num == "01"){
-      return "ENE";
-    }else if(num == "02"){
-      return "FEB";
-    }else if(num == "03"){
-      return "MAR";
-    }else if(num == "04"){
-      return "ABR";
-    }else if(num == "05"){
-      return "MAY";
-    }else if(num == "06"){
-      return "JUN";
-    }else if(num == "07"){
-      return "JUL";
-    }else if(num == "08"){
-      return "AGO";
-    }else if(num == "09"){
-      return "SEP";
-    }else if(num == "10"){
-      return "OCT";
-    }else if(num == "11"){
-      return "NOV";
-    }else if(num == "12"){
-      return "DIC";
-    }
- }
+    return "ENE";
+  }else if(num == "02"){
+    return "FEB";
+  }else if(num == "03"){
+    return "MAR";
+  }else if(num == "04"){
+    return "ABR";
+  }else if(num == "05"){
+    return "MAY";
+  }else if(num == "06"){
+    return "JUN";
+  }else if(num == "07"){
+    return "JUL";
+  }else if(num == "08"){
+    return "AGO";
+  }else if(num == "09"){
+    return "SEP";
+  }else if(num == "10"){
+    return "OCT";
+  }else if(num == "11"){
+    return "NOV";
+  }else if(num == "12"){
+    return "DIC";
+  }
+}
 
- this.estaUsuarioEnCaravana = function(idCaravana){
-    for(var i = 0; i < caravanasUsuario.length; i++){
-      if(caravanasUsuario[i].id == idCaravana){
-        return true;
-      }
+this.estaUsuarioEnCaravana = function(idCaravana){
+  for(var i = 0; i < caravanasUsuario.length; i++){
+    if(caravanasUsuario[i].id == idCaravana){
+      return true;
     }
-    return false;
- }
+  }
+  return false;
+}
 
- this.setInfo = function(userKey){
+this.setInfo = function(userKey){
 
   usuarioKey = userKey;
 
@@ -194,6 +196,12 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   $stateProvider
 
+  .state('home', {
+    url: '/login',
+    templateUrl: 'templates/logindef.html',
+    controller: 'WilzCtrl'
+  })
+
   .state('app', {
     url: '/app',
     abstract: true,
@@ -201,16 +209,13 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    url: '/search',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/search.html'
-      }
-    }
+  .state('profile', {
+    url: '/profile',
+    abstract: true,
+    templateUrl: 'templates/menu.html',
   })
 
-  .state('app.profile', {
+  .state('profile.main', {
     url: '/profile',
     cache: false,
     views: {
@@ -221,16 +226,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.browse', {
-    url: '/browse',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/browse.html'
-      }
-    }
-  })
 
-  .state('app.caravanas', {
+  .state('profile.caravanas', {
     cache: false,
     url: '/caravanas',
     views: {
@@ -241,28 +238,9 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.playlists', {
-    url: '/playlists',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/playlists.html',
-        controller: 'PlaylistsCtrl'
-      }
-    }
-  })
 
-  .state('app.login', {
-    url: '/login',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/logindef.html',
-        controller: 'WilzCtrl'
-      }
-    }
-  })
-
-  .state('app.rutas', {
-    url: '/rutas',
+  .state('profile.rutas', {
+    url: '/profile/rutas',
     views: {
       'menuContent': {
         templateUrl: 'templates/rutas.html',
@@ -271,7 +249,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.viajes', {
+  .state('profile.viajes', {
     url: '/viajes',
     views: {
       'menuContent': {
@@ -281,17 +259,15 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.single', {
-    url: '/playlists/:playlistId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/playlist.html',
-        controller: 'PlaylistCtrl'
-      }
-    }
-  });
+  .state('signup', {
+    url: '/signup',
+    templateUrl: 'templates/signup.html',
+    controller: 'SignupCtrl'
+  })
+  ;
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/login');
+  //$urlRouterProvider.otherwise('/app/login');
+  $urlRouterProvider.otherwise('/login');
   //$urlRouterProvider.otherwise('/app/caravanas');
   //$urlRouterProvider.otherwise('/app/profile');
 });

@@ -42,8 +42,7 @@ angular.module('starter.controllers', [])
   ];
 })
 
-.controller('WilzCtrl',function($scope, $http, $ionicLoading, $state, ProfileService){
-
+.controller('WilzCtrl',function($scope, $http, $ionicLoading, $state,  ProfileService){
 
   $scope.server_url = ProfileService.getURL();
   $scope.usuario = {}
@@ -75,13 +74,14 @@ angular.module('starter.controllers', [])
     $scope.userkey = angular.fromJson(response.data).key;
     return ProfileService.setInfo($scope.userkey);
   }, function errorCallback(response){
+    console.log(response.data);
     $ionicLoading.hide();
     $scope.usuarioIncorrecto = {'display':'block'};
     return response.data;
   })
    .then(function(){
     if($scope.userkey != ""){
-    $state.go('app.profile');
+      $state.go('profile.main');
     }
     return true;
   });  
@@ -99,7 +99,7 @@ angular.module('starter.controllers', [])
   $scope.nombreUsuario = nombreUsuario;
   $scope.comunidadUsuario = comunidad;
 
-   var promise =  ProfileService.updateCaravanasUsuario();
+  var promise =  ProfileService.updateCaravanasUsuario();
 
   promise.then(function(){
     $scope.serviciosBici = ProfileService.getCaravanasUsuario();
@@ -168,72 +168,73 @@ angular.module('starter.controllers', [])
   console.log($scope.caravanas);
   return response.data;
 }, function errorCallback(response){
+  console.log(console.data);
   $ionicLoading.hide();
   return response.data;
 });
 
-$ionicModal.fromTemplateUrl('contact-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.modal = modal
-  })  
+ $ionicModal.fromTemplateUrl('contact-modal.html', {
+  scope: $scope,
+  animation: 'slide-in-up'
+}).then(function(modal) {
+  $scope.modal = modal
+})  
 
-  $scope.registrarSuscripcionCaravana = function(){
-    console.log("suscripcion");
-    console.log($scope.idCaravanaActiva);
-    console.log($scope.caravanaActiva.direccion);
-    console.log($scope.caravanaActiva.comentarios);
+$scope.registrarSuscripcionCaravana = function(){
+  console.log("suscripcion");
+  console.log($scope.idCaravanaActiva);
+  console.log($scope.caravanaActiva.direccion);
+  console.log($scope.caravanaActiva.comentarios);
 
-    $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+  $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
 
-    var req = {
-     method: 'POST',
-     xhrFields: { withCredentials: true },
-     url: ProfileService.getURL().concat("/api2/agregar-usuario-caravana/"),
-     headers: {
-       'Content-Type': "application/json",
-       'Authorization':"Token ".concat(ProfileService.getUserKey())
-     },
-     data: { id_caravana:"".concat($scope.idCaravanaActiva), "direccion":$scope.caravanaActiva.direccion,"comentarios":$scope.caravanaActiva.comentarios}
-   }
+  var req = {
+   method: 'POST',
+   xhrFields: { withCredentials: true },
+   url: ProfileService.getURL().concat("/api2/agregar-usuario-caravana/"),
+   headers: {
+     'Content-Type': "application/json",
+     'Authorization':"Token ".concat(ProfileService.getUserKey())
+   },
+   data: { id_caravana:"".concat($scope.idCaravanaActiva), "direccion":$scope.caravanaActiva.direccion,"comentarios":$scope.caravanaActiva.comentarios}
+ }
 
-   $http(req).then(function(response){
-    console.log(response.data);
-    return ProfileService.updateCaravanasUsuario();
-  }).then(function(){
-    for(var i = 0; i<$scope.caravanas;i++){
-        $scope.estaInscritoEnCaravana = ProfileService.estaUsuarioEnCaravana($scope.caravanas[i].id);
-      }
-  });
-
-
-    $scope.modal.hide();
-    $scope.caravanaActiva.direccion = "";
-    $scope.caravanaActiva.comentarios = "";
-
+ $http(req).then(function(response){
+  console.log(response.data);
+  return ProfileService.updateCaravanasUsuario();
+}).then(function(){
+  for(var i = 0; i<$scope.caravanas;i++){
+    $scope.estaInscritoEnCaravana = ProfileService.estaUsuarioEnCaravana($scope.caravanas[i].id);
   }
+});
 
-  $scope.openModal = function(id, origen, destino) {
-    $scope.idCaravanaActiva = id;
-    $scope.origenCaravanaActiva = origen;
-    $scope.destinoCaravanaActiva = destino;
-    $scope.modal.show()
-  }
 
-  $scope.closeModal = function() {
-    $scope.modal.hide();
-    $scope.caravanaActiva.direccion = "";
-    $scope.caravanaActiva.comentarios = "";
-  };
+$scope.modal.hide();
+$scope.caravanaActiva.direccion = "";
+$scope.caravanaActiva.comentarios = "";
 
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
-  });
+}
 
-  $scope.estaInscritoEnCaravana = function(idCaravana){
-    return ProfileService.estaUsuarioEnCaravana(idCaravana);
-  }
+$scope.openModal = function(id, origen, destino) {
+  $scope.idCaravanaActiva = id;
+  $scope.origenCaravanaActiva = origen;
+  $scope.destinoCaravanaActiva = destino;
+  $scope.modal.show()
+}
+
+$scope.closeModal = function() {
+  $scope.modal.hide();
+  $scope.caravanaActiva.direccion = "";
+  $scope.caravanaActiva.comentarios = "";
+};
+
+$scope.$on('$destroy', function() {
+  $scope.modal.remove();
+});
+
+$scope.estaInscritoEnCaravana = function(idCaravana){
+  return ProfileService.estaUsuarioEnCaravana(idCaravana);
+}
 
 })
 
@@ -274,12 +275,12 @@ $ionicModal.fromTemplateUrl('contact-modal.html', {
   return response.data;
 });
 
-$ionicModal.fromTemplateUrl('contact-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.modal = modal
-  })  
+ $ionicModal.fromTemplateUrl('contact-modal.html', {
+  scope: $scope,
+  animation: 'slide-in-up'
+}).then(function(modal) {
+  $scope.modal = modal
+})  
 
 
 })
@@ -289,3 +290,91 @@ $ionicModal.fromTemplateUrl('contact-modal.html', {
 .controller('ViajesCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
 })
 
+.controller('SignupCtrl',function($scope, $http, $ionicLoading, $state,$ionicPopup, ProfileService){
+
+
+  $scope.signupData = {};
+
+  $scope.errorSignup = {'display':'none'};
+  // Perform the login action when the user submits the login form
+
+
+
+  $scope.doSignup = function() {
+
+
+    $scope.errorSignup = {'display':'none'};
+
+
+    var req = {
+     method: 'GET',
+     xhrFields: { withCredentials: true },
+     url: ProfileService.getURL().concat("/api/comunidades/"),
+     headers: {
+       'Content-Type': "application/json"
+     },
+     data: {  }
+   }
+
+
+   //Primer llamado a mirar las comunidades
+   $http(req).then(function successCallback(response){
+    console.log("estas son las comunidades");
+    console.log(response.data);
+    var comunidades = angular.fromJson(response.data);
+    var hayComunidad = false;
+    for (var i = 0; i < comunidades.length && !hayComunidad; i++){
+      if(comunidades[i].url_email == $scope.signupData.email.split("@")[1]){
+        hayComunidad = true;
+      }
+    }
+
+    if(hayComunidad){
+      console.log("sí hay comunidad");
+      $scope.errorSignup = {'display':'none'};
+      req.method = "POST";
+      req.url = ProfileService.getURL().concat("/rest-auth/registration/");
+      req.data = { "email": $scope.signupData.email,"username": $scope.signupData.email, "password1":$scope.signupData.password1, "password2": $scope.signupData.password1 };
+      return $http(req);
+    }else{
+     $scope.errorSignup = {'display':'block'};
+     $scope.errorSignupMensaje = "Tu comunidad no está registrada en la plataforma";
+     return true;
+   }
+
+
+ })
+   .then(function(response){
+    //Hizo bien el signup, ahora va a crear el usuario
+    console.log("hizo bien el signup");
+    console.log(response.data);
+    var userkey = angular.fromJson(response.data).key;
+    console.log(userkey);
+    $http.defaults.headers.common['Authorization'] = "Token ".concat(userkey);
+    req.url = ProfileService.getURL().concat("/api2/registrar-usuario/");
+    req.headers = {'Content-Type': "application/json",
+    'Authorization':"Token ".concat(userkey)};
+    req.data = { "email": $scope.signupData.email, "nombre":$scope.signupData.nombre, "celular":$scope.signupData.celular};
+
+    return $http(req);
+  },function(response){
+    //Salió mal el signup
+    console.log(response.data);
+    return response.data;
+  })
+   .then(function(response){
+    //hizo bien el signup
+    console.log("yuhuu");
+    console.log(response.data);
+    
+    var alertPopup = $ionicPopup.alert({
+     title: '¡Suscripcion Exitosa!',
+     template: 'En unos minutos deberás activar tu cuenta en el correo que te enviaremos a '.concat($scope.signupData.email).concat(". No olvides revisar tu bandeja de spam.")
+   });
+    alertPopup.then(function(res) {
+      $state.go('home');
+   });
+
+  });  
+ }
+})

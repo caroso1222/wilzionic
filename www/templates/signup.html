@@ -1,0 +1,39 @@
+<ion-view>
+<ion-content>
+<div class="list list-inset">
+  <div class = "img-signup">
+  <img src="./img/logo-1.png">
+  </div>
+  <div class = "instr-registro">
+    <div class = "recuerda">
+      <span >Recuerda que para crear una cuenta debes ser miembro de una comunidad registrada en Wilz</span>
+    </div>
+  </div>
+  <form ng-submit="doSignup()">
+    <label class="item item-input">
+      <input type="text" placeholder="Nombre" ng-model="signupData.nombre" required>
+    </label>
+    <label class="item item-input">
+      <input type="text" placeholder="Email" ng-model="signupData.email" required>
+    </label>
+    <label class="item item-input">
+      <input type="text" placeholder="Celular" ng-model="signupData.celular" required>
+    </label>
+    <label class="item item-input">
+      <input type="password" placeholder="Contraseña" ng-model="signupData.password1" required>
+    </label>
+    <label class="item item-input">
+      <input type="password" placeholder="Confirma la contraseña" ng-model="signupData.password2" required>
+    </label>
+    <button class="button button-block button-wilz" type="submit">Crear nueva cuenta</button>
+  </form>
+  <div class = "row">
+    <div class = "col" ng-style="errorSignup" ng-model="errorSignupMensaje">Usuario o contraseña incorrecta </div>
+  </div>
+
+  <div class = "lbl-signup">
+    <a href="" ui-sref = "home">Ya tengo cuenta</a>
+  </div>
+</div>
+</ion-content>
+</ion-view>
