@@ -53,6 +53,8 @@ angular.module('starter.controllers', [])
   // Form data for the login modal
   $scope.loginData = {};
 
+  $scope.pudoHacerLogin = false;
+
   $scope.updateNombre = function(){
     $scope.usuarionombre = "Luigys"
   }
@@ -66,22 +68,28 @@ angular.module('starter.controllers', [])
      headers: {
        'Content-Type': "application/json"
      },
-     data: { "email": $scope.loginData.email, "password":$scope.loginData.password }
+     data: { "email": $scope.loginData.email.toLowerCase().trim(), "password":$scope.loginData.password }
    }
 
    $http(req).then(function successCallback(response){
     $scope.usuarioIncorrecto = {'display':'none'};
     $scope.userkey = angular.fromJson(response.data).key;
+    $scope.pudoHacerLogin = true;
+    console.log($scope.userkey);
     return ProfileService.setInfo($scope.userkey);
   }, function errorCallback(response){
     console.log(response.data);
     $ionicLoading.hide();
     $scope.usuarioIncorrecto = {'display':'block'};
+    $scope.pudoHacerLogin = false;
     return response.data;
   })
    .then(function(){
-    if($scope.userkey != ""){
-      $state.go('profile.main');
+    console.log($scope.pudoHacerLogin);
+    if($scope.pudoHacerLogin){
+      if($scope.userkey != ""){
+        $state.go('profile.main');
+      }
     }
     return true;
   });  
@@ -304,6 +312,9 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 
 
     $scope.errorSignup = {'display':'none'};
+    $scope.hayComunidad = false;
+    $scope.hizoSignup = false;
+    var contrasenasCoinciden = true;
 
 
     var req = {
@@ -324,57 +335,86 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
     var comunidades = angular.fromJson(response.data);
     var hayComunidad = false;
     for (var i = 0; i < comunidades.length && !hayComunidad; i++){
-      if(comunidades[i].url_email == $scope.signupData.email.split("@")[1]){
+      if(comunidades[i].url_email == $scope.signupData.email.toLowerCase().split("@")[1].trim()){
         hayComunidad = true;
       }
     }
 
-    if(hayComunidad){
-      console.log("sí hay comunidad");
-      $scope.errorSignup = {'display':'none'};
-      req.method = "POST";
-      req.url = ProfileService.getURL().concat("/rest-auth/registration/");
-      req.data = { "email": $scope.signupData.email,"username": $scope.signupData.email, "password1":$scope.signupData.password1, "password2": $scope.signupData.password1 };
-      return $http(req);
+    if($scope.signupData.password1.trim() != $scope.signupData.password2.trim()){
+      $scope.errorSignupMensaje = "Las contraseñas no coinciden.";
+      $scope.errorSignup = {'display':'block'};
+      contrasenasCoinciden = false;
+      $ionicLoading.hide();
+    }
+
+    if(contrasenasCoinciden){
+      if(hayComunidad){
+        console.log("sí hay comunidad");
+        $scope.hayComunidad = true;
+        $scope.errorSignup = {'display':'none'};
+        req.method = "POST";
+        req.url = ProfileService.getURL().concat("/rest-auth/registration/");
+        req.data = { "email": $scope.signupData.email.toLowerCase().trim(),"username": $scope.signupData.email.toLowerCase().trim(), "password1":$scope.signupData.password1.trim(), "password2": $scope.signupData.password2.trim() };
+        console.log($scope.hayComunidad);
+        return $http(req);
+      }else{
+        console.log("No existe esta comunidad");
+        $scope.errorSignupMensaje = "Tu comunidad no está registrada en la plataforma";
+        $scope.errorSignup = {'display':'block'};
+        return false;
+      }
     }else{
-     $scope.errorSignup = {'display':'block'};
-     $scope.errorSignupMensaje = "Tu comunidad no está registrada en la plataforma";
-     return true;
-   }
+      return false;
+    }
+    
 
 
- })
-   .then(function(response){
+  })
+.then(function(response){
+  console.log("voy a crear el usuario");
+  console.log($scope.hayComunidad);
     //Hizo bien el signup, ahora va a crear el usuario
-    console.log("hizo bien el signup");
-    console.log(response.data);
-    var userkey = angular.fromJson(response.data).key;
-    console.log(userkey);
-    $http.defaults.headers.common['Authorization'] = "Token ".concat(userkey);
-    req.url = ProfileService.getURL().concat("/api2/registrar-usuario/");
-    req.headers = {'Content-Type': "application/json",
-    'Authorization':"Token ".concat(userkey)};
-    req.data = { "email": $scope.signupData.email, "nombre":$scope.signupData.nombre, "celular":$scope.signupData.celular};
-
-    return $http(req);
+    if($scope.hayComunidad){
+      console.log("hizo bien el signup");
+      var userkey = angular.fromJson(response.data).key;
+      console.log(userkey);
+      $http.defaults.headers.common['Authorization'] = "Token ".concat(userkey);
+      req.url = ProfileService.getURL().concat("/api2/registrar-usuario/");
+      req.headers = {'Content-Type': "application/json",
+      'Authorization':"Token ".concat(userkey)};
+      req.data = { "email": $scope.signupData.email.toLowerCase().trim(), "nombre":$scope.signupData.nombre.trim(), "celular":$scope.signupData.celular.trim()};
+      $scope.hizoSignup = true;
+      return $http(req);
+    }
+    return false;
   },function(response){
     //Salió mal el signup
+
+    $ionicLoading.hide();
+
+    console.log("hizo mail el signup");
     console.log(response.data);
+    if(response.data.password1!=null){
+      $scope.errorSignupMensaje = "La contraseña debe ser mínimo de 6 caracteres.";
+    }else if(response.data.email!=null){
+      $scope.errorSignupMensaje = "Este email ya está registrado.";
+    }
+    $scope.errorSignup = {'display':'block'};
     return response.data;
   })
-   .then(function(response){
+.then(function(response){
     //hizo bien el signup
-    console.log("yuhuu");
-    console.log(response.data);
-    
-    var alertPopup = $ionicPopup.alert({
-     title: '¡Suscripcion Exitosa!',
-     template: 'En unos minutos deberás activar tu cuenta en el correo que te enviaremos a '.concat($scope.signupData.email).concat(". No olvides revisar tu bandeja de spam.")
-   });
-    alertPopup.then(function(res) {
-      $state.go('home');
-   });
-
+    if($scope.hizoSignup){
+      console.log("yuhuu");
+      console.log(response.data);
+      var alertPopup = $ionicPopup.alert({
+       title: '¡Suscripcion Exitosa!',
+       template: 'En unos minutos deberás activar tu cuenta en el correo que te enviaremos a '.concat($scope.signupData.email.toLowerCase().trim()).concat(". No olvides revisar tu bandeja de spam.")
+     });
+      alertPopup.then(function(res) {
+        $state.go('home');
+      });
+    }
   });  
- }
+}
 })

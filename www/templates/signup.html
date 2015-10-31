@@ -27,10 +27,9 @@
     </label>
     <button class="button button-block button-wilz" type="submit">Crear nueva cuenta</button>
   </form>
-  <div class = "row">
-    <div class = "col" ng-style="errorSignup" ng-model="errorSignupMensaje">Usuario o contraseña incorrecta </div>
+  <div class = "row error-lbl">
+    <div class = "col" ng-style="errorSignup" ><span ng-bind="errorSignupMensaje"></span> </div>
   </div>
-
   <div class = "lbl-signup">
     <a href="" ui-sref = "home">Ya tengo cuenta</a>
   </div>
