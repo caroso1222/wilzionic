@@ -152,10 +152,13 @@ this.setInfo = function(userKey){
 
 })
 
+
 .run(function($ionicPlatform, $ionicLoading, $rootScope) {
 
   $rootScope.$on('loading:show', function() {
-    $ionicLoading.show({template: 'Un momento por favor...'})
+    //$ionicLoading.show({template: 'Un momento por favor...'})
+    $ionicLoading.show({template: '<img src="./img/loading.gif">'})
+    //$ionicLoading.show({templateUrl: 'templates/loading.html'})
   })
 
   $rootScope.$on('loading:hide', function() {
@@ -215,6 +218,12 @@ this.setInfo = function(userKey){
     templateUrl: 'templates/menu.html',
   })
 
+  .state('prerouter', {
+    url: '/prerouter',
+    controller: 'RouterCtrl',
+    template: '',
+  })
+
   .state('profile.main', {
     url: '/profile',
     cache: false,
@@ -266,8 +275,8 @@ this.setInfo = function(userKey){
   })
   ;
   // if none of the above states are matched, use this as the fallback
-  //$urlRouterProvider.otherwise('/app/login');
-  $urlRouterProvider.otherwise('/login');
+  $urlRouterProvider.otherwise('prerouter');
+  
   //$urlRouterProvider.otherwise('/app/caravanas');
   //$urlRouterProvider.otherwise('/app/profile');
 });

@@ -1,0 +1,64 @@
+<ion-view view-title="CaravanasHome">
+  <ion-content>
+     	<div class="card">
+     		<div class="item item-text-wrap">
+  				<div class = "row" ng-repeat="caravanaLider in caravanasLider">
+  					<div class = "col col-25 fecha-div">
+  						<span class = "dia-caravana">{{caravanaLider.dia}}{{caravanaLider.mes}}</span>
+  						<span class = "hora-caravana">{{caravanaLider.hora}}:{{caravanaLider.min}}AM</span>
+  					</div>
+  					<div class = "col col-75">
+  						<div class = "recorrido-div">
+  							<div class = "div-origen">
+  								<div class = "bullet-recorrido"></div>
+  								<span class = "label-recorrido"> {{caravanaLider.origen}}</span>
+  							</div>
+  							<div class = "bullet-recorrido"></div>
+  							<span class = "label-recorrido"> {{caravanaLider.destino}}</span>
+  							<div class = "small-line line-1"></div>
+  							<div class = "small-line line-2"></div>
+  						</div>
+  					</div>
+  				</div>
+				<a class="button button-block button-wilz" ng-click="openModal()" >
+					Publicar caravana
+				</a>
+			</div>
+		</div>
+  </ion-content>
+</ion-view>
+
+<script id="publicar-caravana-modal.html" type="text/ng-template">
+  <div class="modal">
+      
+    <ion-content >
+    <span class="titulo-modal-caravana">Publica tu caravana </span>
+
+        <form ng-submit="registrarPublicacionCaravana()">
+      <div class="list">
+        <label class="item item-input">
+          <input type="text" ng-model="publicacionCaravana.origen" placeholder = "Origen" required>
+        </label>
+        <label class="item item-input">
+          <input type="text" ng-model="publicacionCaravana.destino" placeholder = "Destino" required>
+        </label>
+        <label class="item item-input">
+          <textarea placeholder = "¿Cuál será tu ruta?" ng-model="publicacionCaravana.ruta"></textarea>
+        </label>
+        <label class="item item-input">
+          <input type="text" ng-model="publicacionCaravana.fecha_dia" placeholder = "Fecha de salida (DD-MM)" required>
+        </label>
+        <label class="item item-input">
+          <input type="text" ng-model="publicacionCaravana.fecha_hora" placeholder = "Hora de inicio (HH:DD)" required>
+        </label>
+      </div>
+
+      <button class="button button-full button-balanced" type="submit">Listo</button>
+
+   		</form>
+   		<button class="button button-clear button-assertive btn-cancelar-caravana" ng-click = "closeModal()">
+  			Cancelar
+		</button>
+    </ion-content>
+  </div>
+</script>

@@ -76,6 +76,7 @@ angular.module('starter.controllers', [])
     $scope.userkey = angular.fromJson(response.data).key;
     $scope.pudoHacerLogin = true;
     console.log($scope.userkey);
+    window.localStorage.setItem("key",$scope.userkey); //Set the key in user Storage
     return ProfileService.setInfo($scope.userkey);
   }, function errorCallback(response){
     console.log(response.data);
@@ -293,7 +294,17 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 
 })
 
-
+.controller('RouterCtrl',function($scope, $state, ProfileService){
+  var llave = window.localStorage.getItem("key");
+  if(llave != null){
+    var userKey = window.localStorage.getItem("key");
+    ProfileService.setInfo(userKey).then(function(){
+      $state.go('profile.main');
+    });
+  }else{
+    $state.go('home');
+  }
+})
 
 .controller('ViajesCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
 })
@@ -417,4 +428,69 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
     }
   });  
 }
+})
+
+
+
+.controller('CaravanasHomeCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
+
+  $scope.publicacionCaravana = []
+
+   $ionicModal.fromTemplateUrl('publicar-caravana-modal.html', {
+  scope: $scope,
+  animation: 'slide-in-up'
+}).then(function(modal) {
+  $scope.modal = modal
+})
+
+$scope.openModal = function() {
+  $scope.modal.show()
+};
+
+$scope.closeModal = function() {
+  $scope.modal.hide();
+  $scope.caravanaActiva.direccion = "";
+  $scope.caravanaActiva.comentarios = "";
+};
+
+$scope.$on('$destroy', function() {
+  $scope.modal.remove();
+});
+
+
+$scope.registrarPublicacionCaravana = function(){
+  console.log("publicacion");
+  console.log($scope.idCaravanaActiva);
+  console.log($scope.caravanaActiva.direccion);
+  console.log($scope.caravanaActiva.comentarios);
+
+  $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+
+  var req = {
+   method: 'POST',
+   xhrFields: { withCredentials: true },
+   url: ProfileService.getURL().concat("/api2/agregar-usuario-caravana/"),
+   headers: {
+     'Content-Type': "application/json",
+     'Authorization':"Token ".concat(ProfileService.getUserKey())
+   },
+   data: { id_caravana:"".concat($scope.idCaravanaActiva), "direccion":$scope.caravanaActiva.direccion,"comentarios":$scope.caravanaActiva.comentarios}
+ }
+
+ $http(req).then(function(response){
+  console.log(response.data);
+  return ProfileService.updateCaravanasUsuario();
+}).then(function(){
+  for(var i = 0; i<$scope.caravanas;i++){
+    $scope.estaInscritoEnCaravana = ProfileService.estaUsuarioEnCaravana($scope.caravanas[i].id);
+  }
+});
+
+
+$scope.modal.hide();
+$scope.caravanaActiva.direccion = "";
+$scope.caravanaActiva.comentarios = "";
+
+}
+
 })
