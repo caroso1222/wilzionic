@@ -136,8 +136,6 @@ angular.module('starter.controllers', [])
   $scope.caravanaActiva = []
   var caravanasUsuario = [];
 
-  console.log("esta es la llave");
-  console.log(ProfileService.getUserKey());
   ProfileService.updateCaravanasUsuario();
 
   $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
@@ -459,10 +457,6 @@ $scope.$on('$destroy', function() {
 
 
 $scope.registrarPublicacionCaravana = function(){
-  console.log("publicacion");
-  console.log($scope.idCaravanaActiva);
-  console.log($scope.caravanaActiva.direccion);
-  console.log($scope.caravanaActiva.comentarios);
 
   $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
 
