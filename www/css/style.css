@@ -13,8 +13,19 @@
 	margin-top: 10px !important;
 }
 
+.light-hr{
+	border:none;
+	background-color: #dddddd;
+	height: 1px;
+}
+
 .title-card{
 	margin-bottom: 6px !important;
+}
+
+.title-card-bici{
+	margin-bottom: 6px !important;
+	text-align: center;
 }
 
 .dia-caravana{
@@ -36,6 +47,22 @@
 	font-size: 12px;
 	color: #777777;
 	display: block;
+}
+
+.icono-gente{
+	position: absolute;
+	right: 23px;
+	margin-top: 12px;
+	color: #777777;
+
+}
+
+.num-inscritos{
+	position: absolute;
+	right: 25px;
+	margin-top: 28px;
+	font-size: 14px;
+	color: #777777;
 }
 
 .ruta-van-div{
@@ -254,6 +281,12 @@
 	background-color: #d43761;
 	border:none;
 	color: white;
+}
+
+.button-wilz-empty{
+	background-color: transparent;
+	border:1px solid #d43761;
+	color: #d43761;
 }
 
 @media(max-width: 320px){

@@ -1,0 +1,65 @@
+<ion-view view-title="Caravanas">
+  <ion-content>
+      <div class="card" ng-repeat="caravana in caravanas" >
+        <div class="item item-text-wrap">
+          <div class = "row" ng-show = "estaInscritoEnPublicacionesCaravanas(caravana.id)">
+            <div class = "col inscrito-div">
+              INSCRITO
+            </div>
+          </div>
+        <div class = "row">
+          <div class = "col col-25 fecha-div">
+            <span class = "dia-caravana">{{caravana.dia}}{{caravana.mes}}</span>
+            <span class = "hora-caravana">{{caravana.hora}}:{{caravana.min}}AM</span>
+          </div>
+          <div class = "col col-75">
+            <div class = "recorrido-div">
+              <div class = "div-origen">
+                <div class = "bullet-recorrido"></div>
+                <span class = "label-recorrido"> {{caravana.origen}}</span>
+              </div>
+              <div class = "bullet-recorrido"></div>
+              <span class = "label-recorrido"> {{caravana.destino}}</span>
+              <div class = "small-line line-1"></div>
+              <div class = "small-line line-2"></div>
+            </div>
+          </div>
+        </div>
+        <a class="button button-block button-wilz" ng-click="openModal(caravana.id,caravana.origen,caravana.destino)" ng-hide="estaInscritoEnPublicacionesCaravanas(caravana.id)">
+          Quiero unirme
+        </a>
+
+        <a class="button button-block button-wilz-empty" ng-click="anularSuscripcion(caravana.id)" ng-show="estaInscritoEnPublicacionesCaravanas(caravana.id)">
+          Anular suscripción
+        </a>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
+
+<script id="contact-modal.html" type="text/ng-template">
+  <div class="modal">
+      
+    <ion-content >
+    <span class="titulo-modal-caravana">Únete a la caravana </span>
+    <div class="subtitulo-modal-caravana"> {{origenCaravanaActiva}} - {{destinoCaravanaActiva}}</div>
+
+        <form ng-submit="registrarSuscripcionCaravana()">
+      <div class="list">
+        <label class="item item-input">
+          <input type="text" ng-model="caravanaActiva.direccion" placeholder = "¿Dónde te vas a unir a la caravana?" required>
+        </label>
+        <label class="item item-input">
+          <textarea placeholder = "Comentarios" ng-model="caravanaActiva.comentarios"></textarea>
+        </label>
+      </div>
+
+      <button class="button button-full button-balanced" type="submit">Listo</button>
+
+      </form>
+      <button class="button button-clear button-assertive btn-cancelar-caravana" ng-click = "closeModal()">
+        Cancelar
+    </button>
+    </ion-content>
+  </div>
+</script>

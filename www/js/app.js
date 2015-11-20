@@ -4,11 +4,20 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','ngCordova'])
 
-.service('ProfileService',function($http){
+.service('ProfileService',function($http,$window,$ionicHistory){
   //var server_url = "http://192.168.0.3:8000"
+
+  //PARA BORRAR EL CACHÉ  
+  /*
+    $window.localStorage.clear();
+    $ionicHistory.clearCache();
+    $ionicHistory.clearHistory();
+    */
+
   //var server_url = "http://localhost:8000"
+  //var server_url = "http://192.168.0.3:8000"
   //var server_url = "http://felizcumplemagda.com"
   var server_url = "http://wilzapi.caroso1222.webfactional.com"
   var nombreUsuario = "";
@@ -17,6 +26,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
   var usuarioKey = "";
   var nombreComunidad = "";
   var caravanasUsuario = [];
+  var caravanasLider = [];
+  var publicacionesCaravanasUsuario = [];
 
   this.getURL = function(){
     return server_url;
@@ -24,6 +35,10 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   this.getCaravanasUsuario = function(){
     return caravanasUsuario;
+  }
+
+  this.getPublicacionesCaravanasUsuario = function(){
+    return publicacionesCaravanasUsuario;
   }
 
   this.getNombreUsuario = function(){
@@ -42,13 +57,13 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     userKey = newUserKey;
   }
 
-  this.updateCaravanasUsuario = function(){
+  this.updateCaravanasLider = function(){
     $http.defaults.headers.common['Authorization'] = "Token ".concat(usuarioKey);
 
     var req = {
      method: 'GET',
      xhrFields: { withCredentials: true },
-     url: server_url.concat("/api2/caravanas-usuario/"),
+     url: server_url.concat("/api2/caravanas-lider-usuario/"),
      headers: {
        'Content-Type': "application/json",
        'Authorization':"Token ".concat(usuarioKey)
@@ -56,18 +71,70 @@ angular.module('starter', ['ionic', 'starter.controllers'])
      data: { }
    }
 
-   caravanasUsuario = [];
+   caravanasLider = [];
    return $http(req).then(function(response){
     caravanas = angular.fromJson(response.data);
     for (var i = 0; i < caravanas.length; i++){
       console.log(darFechaEnArreglo(caravanas[i].fecha_salida));
-      caravanasUsuario.push({id:caravanas[i].id,origen:caravanas[i].origen,destino:caravanas[i].destino,fecha:darFechaEnArreglo(caravanas[i].fecha_salida)[0]});
+      caravanasLider.push({id:caravanas[i].id,origen:caravanas[i].origen,destino:caravanas[i].destino,ruta:caravanas[i].ruta,fecha_salida:darFechaEnArreglo(caravanas[i].fecha_salida)[0]});
     }
     return response.data;
   }); 
  }
 
- function darFechaEnArreglo(fecha){
+ //Refresca el arreglo que guarda las caravanas donde está inscrito el usuario
+ this.updateCaravanasUsuario = function(){
+  $http.defaults.headers.common['Authorization'] = "Token ".concat(usuarioKey);
+
+  var req = {
+   method: 'GET',
+   xhrFields: { withCredentials: true },
+   url: server_url.concat("/api2/caravanas-usuario/"),
+   headers: {
+     'Content-Type': "application/json",
+     'Authorization':"Token ".concat(usuarioKey)
+   },
+   data: { }
+ }
+
+ caravanasUsuario = [];
+ return $http(req).then(function(response){
+  caravanas = angular.fromJson(response.data);
+  for (var i = 0; i < caravanas.length; i++){
+    console.log(darFechaEnArreglo(caravanas[i].fecha_salida));
+    caravanasUsuario.push({id:caravanas[i].id,origen:caravanas[i].origen,destino:caravanas[i].destino,fecha:darFechaEnArreglo(caravanas[i].fecha_salida)[0]});
+  }
+  return response.data;
+}); 
+}
+
+//Refresca el arreglo que guarda las publicaciones caravanas donde está inscrito el usuario
+ this.updatePublicacionesCaravanasUsuario = function(){
+  $http.defaults.headers.common['Authorization'] = "Token ".concat(usuarioKey);
+
+  var req = {
+   method: 'GET',
+   xhrFields: { withCredentials: true },
+   url: server_url.concat("/api2/publicaciones-caravanas-de-usuario/"),
+   headers: {
+     'Content-Type': "application/json",
+     'Authorization':"Token ".concat(usuarioKey)
+   },
+   data: { }
+ }
+
+ publicacionesCaravanasUsuario = [];
+ return $http(req).then(function(response){
+  caravanas = angular.fromJson(response.data);
+  for (var i = 0; i < caravanas.length; i++){
+    console.log(darFechaEnArreglo(caravanas[i].fecha_salida));
+    publicacionesCaravanasUsuario.push({id:caravanas[i].id,lider:caravanas[i].el_lider,origen:caravanas[i].origen,destino:caravanas[i].destino,fecha:darFechaEnArreglo(caravanas[i].fecha_salida)[0]});
+  }
+  return response.data;
+}); 
+}
+
+function darFechaEnArreglo(fecha){
   var elDia = fecha.substring(8,10);
   var elMes = fecha.substring(5,7);
   var laHora = fecha.substring(11,13);
@@ -119,6 +186,17 @@ this.estaUsuarioEnCaravana = function(idCaravana){
   return false;
 }
 
+this.estaUsuarioEnPublicacionesCaravanas = function(idCaravana){
+  for(var i = 0; i < publicacionesCaravanasUsuario.length; i++){
+    if(publicacionesCaravanasUsuario[i].id == idCaravana){
+      return true;
+    }
+  }
+  return false;
+}
+
+
+
 this.setInfo = function(userKey){
 
   usuarioKey = userKey;
@@ -137,11 +215,14 @@ this.setInfo = function(userKey){
  }
 
  return $http(req).then(function(response){
+  console.log("Voy a pedir comunidades");
   nombreUsuario = angular.fromJson(response.data)[0].nombre;
   celUsuario = angular.fromJson(response.data)[0].celular;
   idComunidad = angular.fromJson(response.data)[0].comunidad;
   req.url = server_url.concat("/api/comunidades/").concat(idComunidad).concat("/");
   return $http(req);
+},function(response){
+  console.log(response);
 })
  .then(function(response){
   nombreComunidad = angular.fromJson(response.data).nombre;
@@ -247,6 +328,28 @@ this.setInfo = function(userKey){
     }
   })
 
+  .state('profile.caravanashome', {
+    cache: false,
+    url: '/caravanas/main',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/caravanasHome.html',
+        controller: 'CaravanasHomeCtrl'
+      }
+    }
+  })
+
+  .state('profile.caravanasComunidad', {
+    cache: false,
+    url: '/caravanas/comunidad',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/caravanasComunidad.html',
+        controller: 'CaravanasComunidadCtrl'
+      }
+    }
+  })
+
 
   .state('profile.rutas', {
     url: '/profile/rutas',
@@ -272,6 +375,12 @@ this.setInfo = function(userKey){
     url: '/signup',
     templateUrl: 'templates/signup.html',
     controller: 'SignupCtrl'
+  })
+
+  .state('showmap',{
+    url: '/showmap',
+    templateUrl: 'templates/showmap.html',
+    controller: 'ShowMapCtrl'
   })
   ;
   // if none of the above states are matched, use this as the fallback

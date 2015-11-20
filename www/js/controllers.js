@@ -2,6 +2,8 @@ angular.module('starter.controllers', [])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
+
+
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -128,8 +130,9 @@ angular.module('starter.controllers', [])
   };
 })
 
-
-
+//*********************************************************//
+//---*******************CARAVANASCTRL---*******************//
+//*********************************************************//
 .controller('CaravanasCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
 
   $scope.caravanas = []
@@ -246,8 +249,9 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 })
 
 
-
-
+//*********************************************************//
+//---**********************RUTAS CTRL**********************//
+//*********************************************************//
 .controller('RutasCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
 
   $scope.rutas = []
@@ -292,7 +296,13 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 
 })
 
+//*********************************************************//
+//---**********************ROUTER CTRL*********************//
+//*********************************************************//
 .controller('RouterCtrl',function($scope, $state, ProfileService){
+
+
+
   var llave = window.localStorage.getItem("key");
   if(llave != null){
     var userKey = window.localStorage.getItem("key");
@@ -307,6 +317,9 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 .controller('ViajesCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
 })
 
+//*********************************************************//
+//---**********************SIGNUP CTRL*********************//
+//*********************************************************//
 .controller('SignupCtrl',function($scope, $http, $ionicLoading, $state,$ionicPopup, ProfileService){
 
 
@@ -429,10 +442,58 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 })
 
 
+//*********************************************************//
+//---******************CARAVANAS HOME CTRL*****************//
+//*********************************************************//
+.controller('CaravanasHomeCtrl',function($scope,$state, $stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
 
-.controller('CaravanasHomeCtrl',function($scope,$stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
-
+$scope.caravanasLider = []
   $scope.publicacionCaravana = []
+
+//ACTUALIZA LAS CARAVANAS DE LIDER
+$http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+  var req = {
+   method: 'GET',
+   xhrFields: { withCredentials: true },
+   url: ProfileService.getURL().concat("/api2/caravanas-lider-usuario/"),
+   headers: {
+     'Content-Type': "application/json",
+     'Authorization':"Token ".concat(ProfileService.getUserKey())
+   },
+   data: {}
+ }
+
+ $http(req).then(function successCallback(response){
+  var lasCaravanas = angular.fromJson(response.data);
+  for(var i = 0;i<lasCaravanas.length;i++){
+    var laFecha = lasCaravanas[i].fecha_salida;
+
+    var elDia = laFecha.substring(8,10);
+    var elMes = laFecha.substring(5,7);
+    var laHora = laFecha.substring(11,13);
+    var losMin = laFecha.substring(14,16);
+
+    $scope.caravanasLider.push({id:lasCaravanas[i].id,
+      origen:lasCaravanas[i].origen,
+      destino:lasCaravanas[i].destino,
+      ruta:lasCaravanas[i].ruta,
+      dia:elDia,
+      mes:ProfileService.convertirMesALetras(elMes),
+      hora:laHora,
+      min:losMin,
+      lider:lasCaravanas[i].lider});
+  }
+  console.log(lasCaravanas);
+  console.log($scope.caravanasLider);
+  return response.data;
+}, function errorCallback(response){
+  console.log(console.data);
+  $ionicLoading.hide();
+  return response.data;
+});
+
+
+
 
    $ionicModal.fromTemplateUrl('publicar-caravana-modal.html', {
   scope: $scope,
@@ -447,8 +508,11 @@ $scope.openModal = function() {
 
 $scope.closeModal = function() {
   $scope.modal.hide();
-  $scope.caravanaActiva.direccion = "";
-  $scope.caravanaActiva.comentarios = "";
+  $scope.publicacionCaravana.origen = "";
+  $scope.publicacionCaravana.destino = "";
+  $scope.publicacionCaravana.ruta = "";
+  $scope.publicacionCaravana.fecha_dia = "";
+  $scope.publicacionCaravana.fecha_hora = "";
 };
 
 $scope.$on('$destroy', function() {
@@ -456,35 +520,61 @@ $scope.$on('$destroy', function() {
 });
 
 
+
+
 $scope.registrarPublicacionCaravana = function(){
 
   $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
 
+  if(verificarFecha($scope.publicacionCaravana.fecha_dia,$scope.publicacionCaravana.fecha_hora)){
+    console.log("entro");
+    $scope.errorFechaCaravana = {'display':'none'};
+    var fecha = "2015-".concat($scope.publicacionCaravana.fecha_dia).concat("T").concat($scope.publicacionCaravana.fecha_hora).concat(":00Z");
+  }else{
+    $scope.errorFechaCaravanaMensaje = "Debe escribir la fecha como MM-DD y la hora como HH:MM";
+      $scope.errorFechaCaravana = {'display':'block'};
+    return false;
+  }
   var req = {
    method: 'POST',
    xhrFields: { withCredentials: true },
-   url: ProfileService.getURL().concat("/api2/agregar-usuario-caravana/"),
+   url: ProfileService.getURL().concat("/api2/publicar-caravana/"),
    headers: {
      'Content-Type': "application/json",
      'Authorization':"Token ".concat(ProfileService.getUserKey())
    },
-   data: { id_caravana:"".concat($scope.idCaravanaActiva), "direccion":$scope.caravanaActiva.direccion,"comentarios":$scope.caravanaActiva.comentarios}
+   //data: {"origen":$scope.publicacionCaravana.origen,"destino":$scope.publicacionCaravana.destino,"ruta":$scope.publicacionCaravana.ruta,"fecha_salida":$scope.publicacionCaravana.fecha_salida}
+
+   data: {"origen":$scope.publicacionCaravana.origen,"destino":$scope.publicacionCaravana.destino,"ruta":$scope.publicacionCaravana.ruta,"fecha_salida":fecha}
+   
  }
 
  $http(req).then(function(response){
   console.log(response.data);
-  return ProfileService.updateCaravanasUsuario();
 }).then(function(){
-  for(var i = 0; i<$scope.caravanas;i++){
-    $scope.estaInscritoEnCaravana = ProfileService.estaUsuarioEnCaravana($scope.caravanas[i].id);
-  }
+  $state.go($state.current, {}, {reload: true});
 });
 
 
 $scope.modal.hide();
-$scope.caravanaActiva.direccion = "";
-$scope.caravanaActiva.comentarios = "";
+$scope.publicacionCaravana.origen = "";
+  $scope.publicacionCaravana.destino = "";
+  $scope.publicacionCaravana.ruta = "";
+  $scope.publicacionCaravana.fecha_dia = "";
+  $scope.publicacionCaravana.fecha_hora = "";
 
+}
+
+function verificarFecha(mesdia,hora){
+  console.log(/^([0-9][0-9]-[0-9][0-9])$/.test(mesdia));
+  if(!(/^([0-9][0-9]-[0-9][0-9])$/.test(mesdia))){
+    return false;
+  }
+  console.log(/^([0-9][0-9]:[0-9][0-9])$/.test(hora));
+  if(!(/^([0-9][0-9]:[0-9][0-9])$/.test(hora))){
+    return false;
+  }
+  return true;
 }
 
 })
