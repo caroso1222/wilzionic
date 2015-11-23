@@ -272,7 +272,7 @@ angular.module('ngCordova.plugins.backgroundGeolocation', [])
         $window.plugins.backgroundGeoLocation.configure(
           function (result) {
             q.notify(result);
-            $window.plugins.backgroundGeoLocation.finish();
+            $window.backgroundGeoLocation.finish();
           },
           function (err) {
             q.reject(err);
@@ -286,7 +286,7 @@ angular.module('ngCordova.plugins.backgroundGeolocation', [])
       start: function () {
         var q = $q.defer();
 
-        $window.plugins.backgroundGeoLocation.start(
+        $window.backgroundGeoLocation.start(
           function (result) {
             q.resolve(result);
           },
@@ -300,7 +300,7 @@ angular.module('ngCordova.plugins.backgroundGeolocation', [])
       stop: function () {
         var q = $q.defer();
 
-        $window.plugins.backgroundGeoLocation.stop(
+        $window.backgroundGeoLocation.stop(
           function (result) {
             q.resolve(result);
           },

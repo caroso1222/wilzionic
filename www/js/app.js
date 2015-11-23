@@ -17,9 +17,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','
     */
 
   //var server_url = "http://localhost:8000"
-  //var server_url = "http://192.168.0.3:8000"
+  var server_url = "http://192.168.0.3:8000"
   //var server_url = "http://felizcumplemagda.com"
-  var server_url = "http://wilzapi.caroso1222.webfactional.com"
+  //var server_url = "http://wilzapi.caroso1222.webfactional.com"
   var nombreUsuario = "";
   var celUsuario = "";
   var idComunidad = "";

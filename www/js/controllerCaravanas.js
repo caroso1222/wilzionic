@@ -1,3 +1,18 @@
+window.onload = function(){
+	console.log("empiezo");
+	if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
+		document.addEventListener("deviceready", onDeviceReady, false);
+	} else {
+		onDeviceReady();
+	}	
+};
+
+function onDeviceReady(){
+	console.log("device listo");
+}
+
+
+
 angular.module('starter.caravanas', ['ngCordova'])
 
 
@@ -132,32 +147,193 @@ angular.module('starter.caravanas', ['ngCordova'])
 		$scope.modal.hide();
 		$scope.caravanaActiva.direccion = "";
 		$scope.caravanaActiva.comentarios = "";
-
 	}
-
 })
 
-.controller('ShowMapCtrl',function($scope,$cordovaGeolocation){
+.controller('ShowMapCtrl1',function($scope,$cordovaGeolocation){
 
 	$scope.latitud = 0;
 	$scope.longitud = 0;
+	$scope.log_location = 10;
 
-	var watchOptions = {
-		timeout : 5000,
-    enableHighAccuracy: false // may cause errors if true
-};
-
-var watch = $cordovaGeolocation.watchPosition(watchOptions);
-watch.then(
-	null,
-	function(err) {
+	var posOptions = {timeout: 10000, enableHighAccuracy: false};
+	$cordovaGeolocation
+	.getCurrentPosition(posOptions)
+	.then(function (position) {
+		$scope.latitud  = position.coords.latitude
+		$scope.longitud = position.coords.longitude
+	}, function(err) {
       // error
-  },
-  function(position) {
-  	$scope.latitud  = position.coords.latitude;
-  	$scope.longitud = position.coords.longitude;
-  	console.log("hola");
   });
 
-watch.clearWatch();
+	document.addEventListener('deviceready', onDeviceReady1, false);
+
+	
+
+	function onDeviceReady1 () {
+		var backgroundGeoLocation = window.backgroundGeolocation;
+		console.log("entro a android")
+	// BackgroundGeoLocation is highly configurable. See platform specific configuration options 
+	backgroundGeoLocation.configure(callbackFn, failureFn, {
+		desiredAccuracy: 10,
+		stationaryRadius: 20,
+		distanceFilter: 30,
+        debug: true, // <-- enable this hear sounds for background-geolocation life-cycle. 
+        stopOnTerminate: false, // <-- enable this to clear background location settings when the app terminates 
+    });
+
+	var callbackFn = function(location) {
+		console.log('[js] BackgroundGeoLocation callback:  ' + location.latitude + ',' + location.longitude);
+		$scope.log_location = '[js] BackgroundGeoLocation callback:  ' + location.latitude + ',' + location.longitude;
+        backgroundGeoLocation.finish();
+    };
+
+    var failureFn = function(error) {
+    	console.log('BackgroundGeoLocation error');
+    };
+
+    // BackgroundGeoLocation is highly configurable. See platform specific configuration options 
+    backgroundGeoLocation.configure(callbackFn, failureFn, {
+    	desiredAccuracy: 10,
+    	stationaryRadius: 20,
+    	distanceFilter: 30,
+        debug: true, // <-- enable this hear sounds for background-geolocation life-cycle. 
+        stopOnTerminate: false, // <-- enable this to clear background location settings when the app terminates 
+    });
+
+    backgroundGeoLocation.start();
+
+    $scope.stopBackgroundGeolocation = function () {
+    	backgroundGeoLocation.start();
+    	console.log("detengo");
+    };
+}
+
+
+})
+
+.controller('ShowMapCtrl',function($scope,$cordovaGeolocation, $cordovaBackgroundGeolocation, ProfileService){
+
+	$scope.latitud = 0;
+	$scope.longitud = 0;
+	$scope.log_location = 10;
+
+	var posOptions = {timeout: 10000, enableHighAccuracy: false};
+	$cordovaGeolocation
+	.getCurrentPosition(posOptions)
+	.then(function (position) {
+		$scope.latitud  = position.coords.latitude
+		$scope.longitud = position.coords.longitude
+	}, function(err) {
+      // error
+  });
+/*
+	var options = {
+        url: 'http://only.for.android.com/update_location.json', // <-- Android ONLY:  your server url to send locations to
+        params: {
+            auth_token: 'user_secret_auth_token',    //  <-- Android ONLY:  HTTP POST params sent to your server when persisting locations.
+            foo: 'bar'                              //  <-- Android ONLY:  HTTP POST params sent to your server when persisting locations.
+        },
+        headers: {                                   // <-- Android ONLY:  Optional HTTP headers sent to your configured #url when persisting locations
+        	"X-Foo": "BAR"
+        },
+        desiredAccuracy: 10,
+        stationaryRadius: 20,
+        distanceFilter: 30,
+        notificationTitle: 'Background tracking', // <-- android only, customize the title of the notification
+        notificationText: 'ENABLED', // <-- android only, customize the text of the notification
+        activityType: 'AutomotiveNavigation',
+        debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+        stopOnTerminate: false // <-- enable this to clear background location settings when the app terminates
+    };
+    
+
+ionic.Platform.ready(function(){
+    // will execute when device is ready, or immediately if the device is already ready.
+    // `configure` calls `start` internally
+    $cordovaBackgroundGeolocation.configure(options)
+    .then(
+      null, // Background never resolves
+      function (err) { // error callback
+      	console.error(err);
+      },
+      function (location) { // notify callback
+      	console.log(location);
+      	$scope.log_location = location;
+      });
+
+
+    $scope.stopBackgroundGeolocation = function () {
+    	$cordovaBackgroundGeolocation.stop();
+    };
+});*/
+
+console.log("pregunto");
+
+document.addEventListener('deviceready', onDeviceReady1, false);
+
+function onDeviceReady1 () {
+	console.log("Entro android");
+	var bgGeo = window.BackgroundGeolocation;
+	bgGeo.configure(function(){console.log("uhumm")}, function(){console.log("uhumerrorm")}, {
+        url: ProfileService.getURL().concat("/api2/post-location/"), // <-- Android ONLY:  your server url to send locations to
+        //url: 'http://posttestserver.com/post.php',
+        params: {
+            auth_token: "Token ".concat(ProfileService.getUserKey()),    //  <-- Android ONLY:  HTTP POST params sent to your server when persisting locations.
+            withCredentials: true,
+            Authorization: "Token ".concat(ProfileService.getUserKey())
+        },
+        headers: {
+				'Content-Type': "application/json",
+				'Authorization':"Token ".concat(ProfileService.getUserKey())
+			},
+        desiredAccuracy: 10,
+        stationaryRadius: 20,
+        distanceFilter: 30,
+        notificationTitle: 'Background tracking', // <-- android only, customize the title of the notification
+        notificationText: 'ENABLED', // <-- android only, customize the text of the notification
+        activityType: 'AutomotiveNavigation',
+        debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+        stopOnTerminate: false // <-- enable this to clear background location settings when the app terminates
+    });
+
+bgGeo.start();
+
+$scope.stopBackgroundGeolocation = function () {
+	bgGeo.stop();
+	console.log("detengo");
+};
+}
+
+
+
+if (!navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
+    bgGeo.configure(function(){console.log("uhumm")}, function(){console.log("uhumerrorm")}, {
+        url: 'http://only.for.android.com/update_location.json', // <-- Android ONLY:  your server url to send locations to
+        params: {
+            auth_token: "Token ".concat(ProfileService.getUserKey()),    //  <-- Android ONLY:  HTTP POST params sent to your server when persisting locations.
+            withCredentials: true,
+            Authorization: "Token ".concat(ProfileService.getUserKey())
+        },
+        headers: {
+				'Content-Type': "application/json",
+				'Authorization':"Token ".concat(ProfileService.getUserKey())
+			},
+        desiredAccuracy: 10,
+        stationaryRadius: 20,
+        distanceFilter: 30,
+        notificationTitle: 'Background tracking', // <-- android only, customize the title of the notification
+        notificationText: 'ENABLED', // <-- android only, customize the text of the notification
+        activityType: 'AutomotiveNavigation',
+        debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+        stopOnTerminate: false // <-- enable this to clear background location settings when the app terminates
+    });
+
+bgGeo.start();
+
+$scope.stopBackgroundGeolocation = function () {
+	bgGeo.stop()
+};
+}
+
 })
