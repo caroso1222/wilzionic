@@ -185,12 +185,12 @@ angular.module('starter.caravanas', ['ngCordova'])
 	var callbackFn = function(location) {
 		console.log('[js] BackgroundGeoLocation callback:  ' + location.latitude + ',' + location.longitude);
 		$scope.log_location = '[js] BackgroundGeoLocation callback:  ' + location.latitude + ',' + location.longitude;
-        backgroundGeoLocation.finish();
-    };
+		backgroundGeoLocation.finish();
+	};
 
-    var failureFn = function(error) {
-    	console.log('BackgroundGeoLocation error');
-    };
+	var failureFn = function(error) {
+		console.log('BackgroundGeoLocation error');
+	};
 
     // BackgroundGeoLocation is highly configurable. See platform specific configuration options 
     backgroundGeoLocation.configure(callbackFn, failureFn, {
@@ -212,7 +212,7 @@ angular.module('starter.caravanas', ['ngCordova'])
 
 })
 
-.controller('ShowMapCtrl',function($scope,$cordovaGeolocation, $cordovaBackgroundGeolocation, ProfileService){
+.controller('ShowMapCtrl',function($scope,$cordovaGeolocation, $cordovaBackgroundGeolocation, $http, $rootScope, $ionicLoading, ProfileService, ClockSrv){
 
 	$scope.latitud = 0;
 	$scope.longitud = 0;
@@ -227,6 +227,49 @@ angular.module('starter.caravanas', ['ngCordova'])
 	}, function(err) {
       // error
   });
+
+	//Es el clock para actualizar el mapa
+	$rootScope.$on('loading:show', function() {
+    //$ionicLoading.show({template: 'Un momento por favor...'})
+    $ionicLoading.hide();
+    //$ionicLoading.show({templateUrl: 'templates/loading.html'})
+});/*
+	ClockSrv.startClock(function(){
+		console.log("pregunto1")
+		$http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+		var req = {
+			method: 'GET',
+			xhrFields: { withCredentials: true },
+			url: ProfileService.getURL().concat("/api2/get-location-2/"),
+			headers: {
+				'Content-Type': "application/json",
+				'Authorization':"Token ".concat(ProfileService.getUserKey())
+			},
+			data: {}
+		}
+
+		$http(req).then(function successCallback(response){
+
+			var ubicacion = angular.fromJson(response.data);
+			var longitud = ubicacion.longitud
+			var latitud = ubicacion.latitud
+			$scope.longitud = longitud
+			$scope.latitud = latitud
+			return response.data;
+		}, function errorCallback(response){
+			return response.data;
+		});
+	});*/
+
+	$rootScope.$on('$stateChangeStart', 
+		function(event, toState, toParams, fromState, fromParams){ 
+			ClockSrv.stopClock();
+			$rootScope.$on('loading:show', function() {
+    //$ionicLoading.show({template: 'Un momento por favor...'})
+    $ionicLoading.show({template: '<img src="./img/loading.gif">'})
+    //$ionicLoading.show({templateUrl: 'templates/loading.html'})
+});
+		});
 /*
 	var options = {
         url: 'http://only.for.android.com/update_location.json', // <-- Android ONLY:  your server url to send locations to
@@ -284,14 +327,14 @@ function onDeviceReady1 () {
             Authorization: "Token ".concat(ProfileService.getUserKey())
         },
         headers: {
-				'Content-Type': "application/json",
-				'Authorization':"Token ".concat(ProfileService.getUserKey())
-			},
-        desiredAccuracy: 10,
-        stationaryRadius: 20,
-        distanceFilter: 30,
-        notificationTitle: 'Background tracking', // <-- android only, customize the title of the notification
-        notificationText: 'ENABLED', // <-- android only, customize the text of the notification
+        	'Content-Type': "application/json",
+        	'Authorization':"Token ".concat(ProfileService.getUserKey())
+        },
+        desiredAccuracy: 5,
+        stationaryRadius: 10,
+        distanceFilter: 20,
+        notificationTitle: 'Wilz tracking', // <-- android only, customize the title of the notification
+        notificationText: 'Activado', // <-- android only, customize the text of the notification
         activityType: 'AutomotiveNavigation',
         debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
         stopOnTerminate: false // <-- enable this to clear background location settings when the app terminates
@@ -306,7 +349,7 @@ $scope.stopBackgroundGeolocation = function () {
 }
 
 
-
+/*
 if (!navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
     bgGeo.configure(function(){console.log("uhumm")}, function(){console.log("uhumerrorm")}, {
         url: 'http://only.for.android.com/update_location.json', // <-- Android ONLY:  your server url to send locations to
@@ -334,6 +377,6 @@ bgGeo.start();
 $scope.stopBackgroundGeolocation = function () {
 	bgGeo.stop()
 };
-}
+}*/
 
 })

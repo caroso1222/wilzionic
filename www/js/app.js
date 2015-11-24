@@ -6,6 +6,27 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','ngCordova'])
 
+
+.factory('ClockSrv', function($interval){
+  var clock = null;
+  var service = {
+    startClock: function(fn){
+      if(clock === null){
+        clock = $interval(fn, 6000);
+      }
+    },
+    stopClock: function(){
+      if(clock !== null){
+        $interval.cancel(clock);
+        clock = null;
+      }
+    }
+  };
+
+  return service;
+})
+
+
 .service('ProfileService',function($http,$window,$ionicHistory){
   //var server_url = "http://192.168.0.3:8000"
 
@@ -17,9 +38,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','
     */
 
   //var server_url = "http://localhost:8000"
-  var server_url = "http://192.168.0.3:8000"
+  //var server_url = "http://192.168.0.3:8000"
   //var server_url = "http://felizcumplemagda.com"
-  //var server_url = "http://wilzapi.caroso1222.webfactional.com"
+  var server_url = "http://wilzapi.caroso1222.webfactional.com"
   var nombreUsuario = "";
   var celUsuario = "";
   var idComunidad = "";
