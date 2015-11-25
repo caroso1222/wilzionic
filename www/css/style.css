@@ -126,20 +126,20 @@
 }
 
 .titulo-modal-caravana{
-    font-size: 18px;
-    text-align: center;
-    margin-top: 10px !important;
-    color: #333333;
-    font-weight: 400;
-    display: block;
+	font-size: 18px;
+	text-align: center;
+	margin-top: 10px !important;
+	color: #333333;
+	font-weight: 400;
+	display: block;
 }
 
 .subtitulo-modal-caravana {
-    text-align: center;
-    color: #444444;
-    font-size: 14px;
-    margin-bottom: 10px;
-    margin-top: 3px;
+	text-align: center;
+	color: #444444;
+	font-size: 14px;
+	margin-bottom: 10px;
+	margin-top: 3px;
 }
 
 .btn-cancelar-caravana{
@@ -289,24 +289,53 @@
 	color: #d43761;
 }
 
+.ball-scale-multiple > div {
+	background: #d43761;
+}
+
+.loader-ball-div{
+	margin-top: 100px;
+	background-color: #333333;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 0%;
+}
+
+.title-div{
+	text-align: center;
+}
+
+.title-div h1{
+	color: #d43761;
+	margin-top: 200px;
+	font-size: 15px;
+}
+
+.detener-div{
+	margin-top: 200px;
+	padding-left: 40px;
+	padding-right: 40px;
+}
+
 @media(max-width: 320px){
 
-.dia-caravana{
-	font-size: 16px;
-}
-.hora-caravana{
-	font-size: 12px;
-}
+	.dia-caravana{
+		font-size: 16px;
+	}
+	.hora-caravana{
+		font-size: 12px;
+	}
 
-.label-recorrido{
-	font-size: 14px;
-}
+	.label-recorrido{
+		font-size: 14px;
+	}
 
-.line-1{
-	bottom: 28px;
-}
+	.line-1{
+		bottom: 28px;
+	}
 
-.line-2{
-	bottom: 24px;
-}
+	.line-2{
+		bottom: 24px;
+	}
 }

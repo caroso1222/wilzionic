@@ -32,6 +32,10 @@
         <a class="button button-block button-wilz-empty" ng-click="anularSuscripcion(caravana.id)" ng-show="estaInscritoEnPublicacionesCaravanas(caravana.id)">
           Anular suscripción
         </a>
+
+        <a class="button button-block button-wilz-empty"  ng-show="caravana.empezo" ng-click="mostrarMapa(caravana.id)">
+          Ver mapa
+        </a>
       </div>
     </div>
   </ion-content>

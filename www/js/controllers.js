@@ -445,25 +445,25 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 //*********************************************************//
 //---******************CARAVANAS HOME CTRL*****************//
 //*********************************************************//
-.controller('CaravanasHomeCtrl',function($scope,$state, $stateParams, $http, $ionicLoading, $ionicModal, ProfileService){
+.controller('CaravanasHomeCtrl',function($scope,$state, $stateParams, $http, $ionicLoading, $ionicModal, ProfileService, $ionicPopup){
 
-$scope.caravanasLider = []
+  $scope.caravanasLider = []
   $scope.publicacionCaravana = []
 
 //ACTUALIZA LAS CARAVANAS DE LIDER
 $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
-  var req = {
-   method: 'GET',
-   xhrFields: { withCredentials: true },
-   url: ProfileService.getURL().concat("/api2/caravanas-lider-usuario/"),
-   headers: {
-     'Content-Type': "application/json",
-     'Authorization':"Token ".concat(ProfileService.getUserKey())
-   },
-   data: {}
- }
+var req = {
+ method: 'GET',
+ xhrFields: { withCredentials: true },
+ url: ProfileService.getURL().concat("/api2/caravanas-lider-usuario/"),
+ headers: {
+   'Content-Type': "application/json",
+   'Authorization':"Token ".concat(ProfileService.getUserKey())
+ },
+ data: {}
+}
 
- $http(req).then(function successCallback(response){
+$http(req).then(function successCallback(response){
   var lasCaravanas = angular.fromJson(response.data);
   for(var i = 0;i<lasCaravanas.length;i++){
     var laFecha = lasCaravanas[i].fecha_salida;
@@ -495,7 +495,7 @@ $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.
 
 
 
-   $ionicModal.fromTemplateUrl('publicar-caravana-modal.html', {
+$ionicModal.fromTemplateUrl('publicar-caravana-modal.html', {
   scope: $scope,
   animation: 'slide-in-up'
 }).then(function(modal) {
@@ -504,6 +504,49 @@ $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.
 
 $scope.openModal = function() {
   $scope.modal.show()
+};
+
+ // A confirm dialog
+ $scope.showConfirm = function(id_caravana) {
+
+
+
+   var confirmPopup = $ionicPopup.confirm({
+     title: 'Empezar recorrido',
+     template: 'Estas a punto de empezar tu recorrido como lider de caravana. Tu ubicación se mostrará a los usuarios inscritos a tu caravana.',
+     cancelText: 'Cancelar',
+     okText: 'Empezar'
+   });
+   confirmPopup.then(function(res) {
+     if(res) {
+      console.log(id_caravana);
+
+      $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+      var req = {
+       method: 'POST',
+       xhrFields: { withCredentials: true },
+       url: ProfileService.getURL().concat("/api2/empezar-publicacion-caravana/"),
+       headers: {
+         'Content-Type': "application/json",
+         'Authorization':"Token ".concat(ProfileService.getUserKey())
+       },
+       data: {"id_caravana":id_caravana}
+     }
+
+     $http(req).then(function successCallback(response){
+      ProfileService.setCaravanaTracking(id_caravana);
+      console.log(id_caravana);
+      $state.go('tracking');
+
+    }, function errorCallback(response){
+      console.log(console.data);
+      $ionicLoading.hide();
+      return response.data;
+    });
+     
+   } else {
+   }
+ });
 };
 
 $scope.closeModal = function() {
@@ -532,7 +575,7 @@ $scope.registrarPublicacionCaravana = function(){
     var fecha = "2015-".concat($scope.publicacionCaravana.fecha_dia).concat("T").concat($scope.publicacionCaravana.fecha_hora).concat(":00Z");
   }else{
     $scope.errorFechaCaravanaMensaje = "Debe escribir la fecha como MM-DD y la hora como HH:MM";
-      $scope.errorFechaCaravana = {'display':'block'};
+    $scope.errorFechaCaravana = {'display':'block'};
     return false;
   }
   var req = {
@@ -558,10 +601,10 @@ $scope.registrarPublicacionCaravana = function(){
 
 $scope.modal.hide();
 $scope.publicacionCaravana.origen = "";
-  $scope.publicacionCaravana.destino = "";
-  $scope.publicacionCaravana.ruta = "";
-  $scope.publicacionCaravana.fecha_dia = "";
-  $scope.publicacionCaravana.fecha_hora = "";
+$scope.publicacionCaravana.destino = "";
+$scope.publicacionCaravana.ruta = "";
+$scope.publicacionCaravana.fecha_dia = "";
+$scope.publicacionCaravana.fecha_hora = "";
 
 }
 

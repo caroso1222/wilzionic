@@ -13,7 +13,94 @@ function onDeviceReady(){
 
 
 
-angular.module('starter.caravanas', ['ngCordova'])
+angular.module('starter.caravanas', ['ngCordova','ngMap'])
+
+
+
+.controller('TrackingCtrl',function($scope,$http, $state, $rootScope, $ionicLoading, $ionicPopup, ProfileService, $cordovaGeolocation){
+
+	var posOptions = {timeout: 10000, enableHighAccuracy: false};
+	$cordovaGeolocation
+	.getCurrentPosition(posOptions)
+	.then(function (position) {
+	}, function(err) {
+      // error
+  });
+
+	document.addEventListener('deviceready', onDeviceReady1, false);
+
+	function onDeviceReady1 () {
+		var bgGeo = window.BackgroundGeolocation;
+		bgGeo.configure(function(){console.log("uhumm")}, function(){console.log("uhumerrorm")}, {
+        url: ProfileService.getURL().concat("/api2/post-location/"), // <-- Android ONLY:  your server url to send locations to
+        //url: 'http://posttestserver.com/post.php',
+        params: {
+            auth_token: "Token ".concat(ProfileService.getUserKey()),    //  <-- Android ONLY:  HTTP POST params sent to your server when persisting locations.
+            withCredentials: true,
+            Authorization: "Token ".concat(ProfileService.getUserKey())
+        },
+        headers: {
+        	'Content-Type': "application/json",
+        	'Authorization':"Token ".concat(ProfileService.getUserKey())
+        },
+        desiredAccuracy: 5,
+        stationaryRadius: 10,
+        distanceFilter: 20,
+        notificationTitle: 'Wilz tracking', // <-- android only, customize the title of the notification
+        notificationText: 'Activado', // <-- android only, customize the text of the notification
+        activityType: 'AutomotiveNavigation',
+        debug: false, // <-- enable this hear sounds for background-geolocation life-cycle.
+        stopOnTerminate: false // <-- enable this to clear background location settings when the app terminates
+    });
+
+bgGeo.start();
+
+$scope.showConfirmStop = function() {
+	console.log("gzi");
+	var confirmPopup = $ionicPopup.confirm({
+		title: 'Terminar recorrido',
+		template: '¿Estás seguro de terminar tu recorrido como líder de caravana?',
+		cancelText: 'Cancelar',
+		okText: 'Sí, terminar'
+	});
+	console.log(ProfileService.getCaravanaTracking());
+	var id_caravana = ProfileService.getCaravanaTracking();
+	confirmPopup.then(function(res) {
+		if(res) {
+			console.log("gzi");
+			$http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+			var req = {
+				method: 'POST',
+				xhrFields: { withCredentials: true },
+				url: ProfileService.getURL().concat("/api2/terminar-publicacion-caravana/"),
+				headers: {
+					'Content-Type': "application/json",
+					'Authorization':"Token ".concat(ProfileService.getUserKey())
+				},
+				data: {"id_caravana":id_caravana}
+			}
+
+			$http(req).then(function successCallback(response){
+
+				bgGeo.stop();
+				$state.go('profile.main');
+
+			}, function errorCallback(response){
+				console.log(console.data);
+				$ionicLoading.hide();
+				return response.data;
+			});
+			bgGeo.stop();
+			$state.go('profile.main');
+
+} else {
+	console.log('Cancelar');
+}
+});
+};
+
+}
+})
 
 
 //*********************************************************//
@@ -54,6 +141,7 @@ angular.module('starter.caravanas', ['ngCordova'])
 				origen:lasCaravanas[i].origen,
 				destino:lasCaravanas[i].destino,
 				ruta:lasCaravanas[i].ruta,
+				empezo:lasCaravanas[i].empezo,
 				dia:elDia,
 				mes:ProfileService.convertirMesALetras(elMes),
 				hora:laHora,
@@ -88,6 +176,11 @@ angular.module('starter.caravanas', ['ngCordova'])
 
 	$scope.estaInscritoEnPublicacionesCaravanas = function(idCaravana){
 		return ProfileService.estaUsuarioEnPublicacionesCaravanas(idCaravana);
+	}
+
+	$scope.mostrarMapa = function(idCaravana){
+		ProfileService.setCaravanaSeguida(idCaravana);
+		$state.go("showmap");
 	}
 
 	$ionicModal.fromTemplateUrl('contact-modal.html', {
@@ -212,7 +305,72 @@ angular.module('starter.caravanas', ['ngCordova'])
 
 })
 
-.controller('ShowMapCtrl',function($scope,$cordovaGeolocation, $cordovaBackgroundGeolocation, $http, $rootScope, $ionicLoading, ProfileService, ClockSrv){
+.controller('ShowMapCtrl',function($scope, $http, $rootScope, $ionicLoading,$timeout, ProfileService, ClockSrv){
+
+	var idCaravanaSeguida = ProfileService.getCaravanaSeguida(); //Esta es la caravana que se está siguiendo
+
+	console.log("empiezo mapa");
+
+	//para que no muestre el loader
+	$rootScope.$on('loading:show', function() {
+    //$ionicLoading.show({template: 'Un momento por favor...'})
+  	 	$ionicLoading.hide()
+    //$ionicLoading.show({templateUrl: 'templates/loading.html'})
+	});
+
+	$rootScope.$on('$stateChangeStart', 
+		function(event, toState, toParams, fromState, fromParams){ 
+			ClockSrv.stopClock();
+			$rootScope.$on('loading:show', function() {
+    			$ionicLoading.show({template: '<img src="./img/loading.gif">'})
+			})
+		})
+
+
+	$timeout(function() {
+		traerLocation();
+		ClockSrv.startClock(function(){
+			traerLocation();
+		});
+	}, 1000); 
+
+	var traerLocation = function(){
+		$http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
+		var req = {
+			method: 'POST',
+			xhrFields: { withCredentials: true },
+			url: ProfileService.getURL().concat("/api2/get-location/"),
+			headers: {
+				'Content-Type': "application/json",
+				'Authorization':"Token ".concat(ProfileService.getUserKey())
+			},
+			data: {id_caravana:idCaravanaSeguida}
+		}
+
+		$http(req).then(function successCallback(response){
+
+			var ubicacion = angular.fromJson(response.data);
+			var lng = parseFloat(ubicacion.longitud);
+			var lat = parseFloat(ubicacion.latitud);
+			console.log(response.data);
+			marker1 = new google.maps.Marker({
+				title: "marcador"
+			});
+			console.log(lng);
+			$scope.latcenter = lat;
+			$scope.lngcenter = lng;
+			var latlng = new google.maps.LatLng(lat, lng);
+			marker1.setPosition(latlng);
+			marker1.setMap($scope.map);
+
+			return response.data;
+		}, function errorCallback(response){
+			return response.data;
+		});
+	}
+})
+
+.controller('ShowMapCtrl2',function($scope,$cordovaGeolocation, $cordovaBackgroundGeolocation, $http, $timeout, $rootScope, $ionicLoading, ProfileService, ClockSrv){
 
 	$scope.latitud = 0;
 	$scope.longitud = 0;
@@ -259,17 +417,17 @@ angular.module('starter.caravanas', ['ngCordova'])
 		}, function errorCallback(response){
 			return response.data;
 		});
-	});*/
+});*/
 
-	$rootScope.$on('$stateChangeStart', 
-		function(event, toState, toParams, fromState, fromParams){ 
-			ClockSrv.stopClock();
-			$rootScope.$on('loading:show', function() {
+$rootScope.$on('$stateChangeStart', 
+	function(event, toState, toParams, fromState, fromParams){ 
+		ClockSrv.stopClock();
+		$rootScope.$on('loading:show', function() {
     //$ionicLoading.show({template: 'Un momento por favor...'})
     $ionicLoading.show({template: '<img src="./img/loading.gif">'})
     //$ionicLoading.show({templateUrl: 'templates/loading.html'})
 });
-		});
+	});
 /*
 	var options = {
         url: 'http://only.for.android.com/update_location.json', // <-- Android ONLY:  your server url to send locations to
@@ -380,3 +538,5 @@ $scope.stopBackgroundGeolocation = function () {
 }*/
 
 })
+
+

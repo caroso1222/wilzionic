@@ -31,11 +31,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','
   //var server_url = "http://192.168.0.3:8000"
 
   //PARA BORRAR EL CACHÉ  
-  /*
+  
     $window.localStorage.clear();
     $ionicHistory.clearCache();
     $ionicHistory.clearHistory();
-    */
+    
 
   //var server_url = "http://localhost:8000"
   //var server_url = "http://192.168.0.3:8000"
@@ -49,9 +49,27 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','
   var caravanasUsuario = [];
   var caravanasLider = [];
   var publicacionesCaravanasUsuario = [];
+  var caravanaSeguida = "";
+  var caravanaTracking = "";
 
   this.getURL = function(){
     return server_url;
+  }
+
+  this.setCaravanaSeguida = function(idCaravana){
+    caravanaSeguida = idCaravana;
+  }
+
+  this.getCaravanaSeguida = function(){
+    return caravanaSeguida;
+  }
+
+  this.setCaravanaTracking = function(idCaravana){
+    caravanaTracking = idCaravana;
+  }
+
+  this.getCaravanaTracking = function(){
+    return caravanaTracking;
   }
 
   this.getCaravanasUsuario = function(){
@@ -380,6 +398,12 @@ this.setInfo = function(userKey){
         controller: 'RutasCtrl'
       }
     }
+  })
+
+  .state('tracking', {
+    url: '/tracking',
+    templateUrl: 'templates/tracking.html',
+    controller: 'TrackingCtrl'
   })
 
   .state('profile.viajes', {
