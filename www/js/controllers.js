@@ -447,8 +447,135 @@ $scope.estaInscritoEnCaravana = function(idCaravana){
 //*********************************************************//
 .controller('CaravanasHomeCtrl',function($scope,$state, $stateParams, $http, $ionicLoading, $ionicModal, ProfileService, $ionicPopup){
 
-  $scope.caravanasLider = []
-  $scope.publicacionCaravana = []
+  $scope.caravanasLider = [];
+  $scope.publicacionCaravana = [];
+  $scope.mes = "not";
+  $scope.dia = "not";
+  $scope.anio = "not";
+  $scope.horas = "not";
+  $scope.minutos = "not";
+
+  var weekDaysList = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"];
+  var monthList = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+  var datePickerCallback = function (valor) {
+  if (typeof(valor) === 'undefined') {
+    console.log('No date selected');
+  } else {
+    console.log('Selected date is : ', valor)
+    valor = valor + '';
+    var mes = valor.split(" ")[1];
+    console.log(mes);
+    if(mes == "Jan"){
+      $scope.mes = "01";
+    }else if(mes == "Feb"){
+      $scope.mes = "02";
+    }else if(mes == "Mar"){
+      $scope.mes = "03";
+    }else if(mes == "Apr"){
+      $scope.mes = "04";
+    }else if(mes == "May"){
+      $scope.mes = "05";
+    }else if(mes == "Jun"){
+      $scope.mes = "06";
+    }else if(mes == "Jul"){
+      $scope.mes = "07";
+    }else if(mes == "Aug"){
+      $scope.mes = "08";
+    }else if(mes == "Sep"){
+      $scope.mes = "09";
+    }else if(mes == "Oct"){
+      $scope.mes = "10";
+    }else if(mes == "Nov"){
+      $scope.mes = "11";
+    }else if(mes == "Dec"){
+      $scope.mes = "12";
+    }
+    $scope.dia = valor.split(" ")[2];
+    $scope.anio = valor.split(" ")[3];
+
+  }
+};
+
+function timePickerCallback(val) {
+  if (typeof (val) === 'undefined') {
+    console.log('Time not selected');
+  } else {
+    var selectedTime = new Date(val * 1000);
+    console.log('Selected epoch is : ', val, 'and the time is ', selectedTime.getUTCHours(), ':', selectedTime.getUTCMinutes(), 'in UTC');
+    var horas = selectedTime.getUTCHours();
+    var minutos = selectedTime.getUTCMinutes();
+    if(horas < 10){
+      horas = "0".concat(horas);
+    }
+    if(minutos < 10){
+      minutos = "0".concat(minutos);
+    }
+    $scope.horas = horas + '';
+    $scope.minutos = minutos + '';
+    console.log($scope.horas);
+    console.log($scope.minutos);
+  }
+}
+
+  //Inicialización de date picker
+   $scope.datepickerObject = {
+      titleLabel: 'Fecha de salida',  //Optional
+      todayLabel: 'Hoy',  //Optional
+      closeLabel: 'Cerrar',  //Optional
+      setLabel: 'OK',  //Optional
+      setButtonType : 'button-assertive',  //Optional
+      todayButtonType : 'button-assertive',  //Optional
+      closeButtonType : 'button-assertive',  //Optional
+      mondayFirst: true,  //Optional
+      weekDaysList: weekDaysList, //Optional
+      monthList: monthList, //Optional
+      templateType: 'popup', //Optional
+      showTodayButton: 'true', //Optional
+      modalHeaderColor: 'bar-positive', //Optional
+      modalFooterColor: 'bar-positive', //Optional
+      from: new Date(2012, 8, 2), //Optional
+      to: new Date(2018, 8, 25),  //Optional
+      callback: function (val) {  //Mandatory
+        datePickerCallback(val);
+      },
+      dateFormat: 'dd-MM-yyyy', //Optional
+      closeOnSelect: false, //Optional
+    };
+
+    $scope.darFecha = function(){
+      if($scope.mes != "not"){
+        angular.element(document.querySelector('#fecha-input')).css("color","black");
+        return $scope.dia.concat("-").concat($scope.mes).concat("-").concat($scope.anio);
+      }else{
+        return "Fecha de salida";
+      }
+    }
+
+    $scope.darHora = function(){
+      if($scope.horas != "not"){
+        angular.element(document.querySelector('#hora-input')).css("color","black");
+        return $scope.horas.concat(":").concat($scope.minutos);
+      }else{
+        return "Hora de salida";
+      }
+    }
+
+
+    //Inicialización de time picker
+    $scope.timePickerObject = {
+  inputEpochTime: ((new Date()).getHours() * 60 * 60),  //Optional
+  step: 15,  //Optional
+  format: 12,  //Optional
+  titleLabel: 'Hora de salida',  //Optional
+  setLabel: 'OK',  //Optional
+  closeLabel: 'Cerrar',  //Optional
+  setButtonType: 'button-positive',  //Optional
+  closeButtonType: 'button-stable',  //Optional
+  callback: function (val) {    //Mandatory
+    timePickerCallback(val);
+  }
+};
 
 //ACTUALIZA LAS CARAVANAS DE LIDER
 $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
@@ -510,7 +637,6 @@ $scope.openModal = function() {
  $scope.showConfirm = function(id_caravana) {
 
 
-
    var confirmPopup = $ionicPopup.confirm({
      title: 'Empezar recorrido',
      template: 'Estas a punto de empezar tu recorrido como lider de caravana. Tu ubicación se mostrará a los usuarios inscritos a tu caravana.',
@@ -554,28 +680,75 @@ $scope.closeModal = function() {
   $scope.publicacionCaravana.ruta = "";
   $scope.publicacionCaravana.fecha_dia = "";
   $scope.publicacionCaravana.fecha_hora = "";
+  $scope.mes = "not";
+  $scope.horas = "not";
+  angular.element(document.querySelector('#fecha-input')).css("color","#aaaaaa");
+  angular.element(document.querySelector('#hora-input')).css("color","#aaaaaa");
 };
 
 $scope.$on('$destroy', function() {
   $scope.modal.remove();
 });
 
-
-
-
+//Función para registrar la publicación
 $scope.registrarPublicacionCaravana = function(){
-
   $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
-
-  if(verificarFecha($scope.publicacionCaravana.fecha_dia,$scope.publicacionCaravana.fecha_hora)){
-    console.log("entro");
-    $scope.errorFechaCaravana = {'display':'none'};
-    var fecha = "2015-".concat($scope.publicacionCaravana.fecha_dia).concat("T").concat($scope.publicacionCaravana.fecha_hora).concat(":00Z");
-  }else{
-    $scope.errorFechaCaravanaMensaje = "Debe escribir la fecha como MM-DD y la hora como HH:MM";
+  //convierte fecha
+  //Es con try porque el trim bota error cuando no tiene nada el campo
+  try{
+      if($scope.publicacionCaravana.origen.trim() == ""){
+        $scope.errorFechaCaravanaMensaje = "Debe seleccionar un origen";
+        $scope.errorFechaCaravana = {'display':'block'};
+        return false;
+      }else{
+        $scope.errorFechaCaravana = {'display':'none'};
+      }
+  }catch(err){
+    $scope.errorFechaCaravanaMensaje = "Debe seleccionar un origen";
     $scope.errorFechaCaravana = {'display':'block'};
     return false;
   }
+
+  try{
+      if($scope.publicacionCaravana.destino.trim() == ""){
+        $scope.errorFechaCaravanaMensaje = "Debe seleccionar un destino";
+        $scope.errorFechaCaravana = {'display':'block'};
+        return false;
+      }else{
+        $scope.errorFechaCaravana = {'display':'none'};
+      }
+  }catch(err){
+    $scope.errorFechaCaravanaMensaje = "Debe seleccionar un destino";
+    $scope.errorFechaCaravana = {'display':'block'};
+    return false;
+  }
+
+  try{
+      if($scope.publicacionCaravana.ruta.trim() == ""){
+        $scope.errorFechaCaravanaMensaje = "Debe seleccionar una ruta";
+        $scope.errorFechaCaravana = {'display':'block'};
+        return false;
+      }else{
+        $scope.errorFechaCaravana = {'display':'none'};
+      }
+  }catch(err){
+    $scope.errorFechaCaravanaMensaje = "Debe seleccionar una ruta";
+    $scope.errorFechaCaravana = {'display':'block'};
+    return false;
+  }
+  
+
+  if($scope.mes != "not" && $scope.horas != "not"){
+    $scope.errorFechaCaravana = {'display':'none'}; 
+    var fecha = $scope.anio.concat("-").concat($scope.mes).concat("-").concat($scope.dia).concat("T").concat($scope.horas).concat(":").concat($scope.minutos).concat(":00Z");
+  }else{
+    $scope.errorFechaCaravanaMensaje = "Debe seleccionar una fecha y una hora";
+    $scope.errorFechaCaravana = {'display':'block'};
+    return false;
+  }
+
+
+
   var req = {
    method: 'POST',
    xhrFields: { withCredentials: true },

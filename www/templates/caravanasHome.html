@@ -49,30 +49,32 @@
     <span class="titulo-modal-caravana">Publica tu caravana </span>
 
         <form ng-submit="registrarPublicacionCaravana()">
-      <div class="list">
-        <label class="item item-input">
-          <input type="text" ng-model="publicacionCaravana.origen" placeholder = "Origen" required>
-        </label>
-        <label class="item item-input">
-          <input type="text" ng-model="publicacionCaravana.destino" placeholder = "Destino" required>
-        </label>
-        <label class="item item-input">
-          <textarea placeholder = "¿Cuál será tu ruta?" ng-model="publicacionCaravana.ruta"></textarea>
-        </label>
-        <label class="item item-input">
-          <input type="text" ng-model="publicacionCaravana.fecha_dia" placeholder = "Fecha de salida (MM-DD)" required>
-        </label>
-        <label class="item item-input">
-          <input type="text" ng-model="publicacionCaravana.fecha_hora" placeholder = "Hora de inicio (HH:DD)" required>
-        </label>
-      </div>
-      <div class = "row error-lbl">
-    <div class = "col" ng-style="errorFechaCaravana" ><span ng-bind="errorFechaCaravanaMensaje"></span> </div>
-  </div>
-
-      <button class="button button-full button-balanced" type="submit">Listo</button>
-
-   		</form>
+          <div class="list formulario-caravana">
+            <label class="item item-input">
+              <input type="text" ng-model="publicacionCaravana.origen" placeholder = "Origen" >
+            </label>
+            <label class="item item-input">
+              <input type="text" ng-model="publicacionCaravana.destino" placeholder = "Destino" >
+            </label>
+            <label class="item item-input">
+              <textarea placeholder = "¿Cuál será tu ruta?" ng-model="publicacionCaravana.ruta"></textarea>
+            </label>
+            <ionic-datepicker input-obj="datepickerObject" class = "ionic-datepicker-div">
+              <button class="button button-full button-light" ng-bind = "darFecha()" id = "fecha-input" type = "button"> Fecha de salida </button>
+            </ionic-datepicker>
+            <ionic-timepicker input-obj="timePickerObject" class = "ionic-timepicker-div">
+              <button class="button button-full button-light overflowShow" ng-bind = "darHora()" id = "hora-input" type = "button">
+                <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
+              </button>
+            </ionic-timepicker>
+          </div>
+          <div class = "row error-lbl">
+            <div class = "col" ng-style="errorFechaCaravana" >
+              <span ng-bind="errorFechaCaravanaMensaje"></span> 
+            </div>
+          </div>
+          <button class="button button-full button-balanced" type="submit">Listo</button>
+   		  </form>
    		<button class="button button-clear button-assertive btn-cancelar-caravana" ng-click = "closeModal()">
   			Cancelar
 		</button>

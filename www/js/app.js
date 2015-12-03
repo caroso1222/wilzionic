@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','ngCordova'])
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','ngCordova','ionic-datepicker','ionic-timepicker'])
 
 
 .factory('ClockSrv', function($interval){
@@ -31,14 +31,14 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','
   //var server_url = "http://192.168.0.3:8000"
 
   //PARA BORRAR EL CACHÉ  
-  
+  /*
     $window.localStorage.clear();
     $ionicHistory.clearCache();
     $ionicHistory.clearHistory();
-    
+    */
 
   //var server_url = "http://localhost:8000"
-  var server_url = "http://192.168.0.3:8000"
+  var server_url = "http://192.168.0.7:8000"
   //var server_url = "http://felizcumplemagda.com"
   //var server_url = "http://wilzapi.caroso1222.webfactional.com"
   var nombreUsuario = "";
