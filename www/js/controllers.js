@@ -519,8 +519,6 @@ $scope.openModal = function() {
    });
    confirmPopup.then(function(res) {
      if(res) {
-
-
       $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
       var req = {
        method: 'POST',

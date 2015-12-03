@@ -63,6 +63,7 @@ $scope.showConfirmStop = function() {
 		cancelText: 'Cancelar',
 		okText: 'Sí, terminar'
 	});
+	var id_caravana = ProfileService.getCaravanaTracking();
 	confirmPopup.then(function(res) {
 		if(res) {
 			console.log("gzi");
@@ -75,7 +76,7 @@ $scope.showConfirmStop = function() {
 					'Content-Type': "application/json",
 					'Authorization':"Token ".concat(ProfileService.getUserKey())
 				},
-				data: {"id_caravana":ProfileService.getCaravanaTracking()}
+				data: {"id_caravana":id_caravana}
 			}
 
 			$http(req).then(function successCallback(response){
