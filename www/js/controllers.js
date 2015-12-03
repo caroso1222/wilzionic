@@ -519,7 +519,7 @@ $scope.openModal = function() {
    });
    confirmPopup.then(function(res) {
      if(res) {
-      console.log(id_caravana);
+
 
       $http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
       var req = {
