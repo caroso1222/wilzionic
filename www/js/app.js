@@ -31,16 +31,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.caravanas','
   //var server_url = "http://192.168.0.3:8000"
 
   //PARA BORRAR EL CACHÉ  
-  /*
+  
     $window.localStorage.clear();
     $ionicHistory.clearCache();
     $ionicHistory.clearHistory();
-    */
+    
 
   //var server_url = "http://localhost:8000"
-  var server_url = "http://192.168.0.7:8000"
+  //var server_url = "http://192.168.0.12:8000"
   //var server_url = "http://felizcumplemagda.com"
-  //var server_url = "http://wilzapi.caroso1222.webfactional.com"
+  var server_url = "http://wilzapi.caroso1222.webfactional.com"
   var nombreUsuario = "";
   var celUsuario = "";
   var idComunidad = "";
@@ -398,6 +398,12 @@ this.setInfo = function(userKey){
         controller: 'RutasCtrl'
       }
     }
+  })
+
+  .state('ciclorutas', {
+    url: '/ciclorutas',
+    templateUrl: 'templates/ciclorutas.html',
+    controller: 'CiclorutasCtrl'
   })
 
   .state('tracking', {

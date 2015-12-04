@@ -81,6 +81,8 @@
 	font-size: 14px;
 	color: #777777;
 	display: block;
+	text-align: right;
+    padding-right: 14px;
 }
 
 .fecha-div{
@@ -281,12 +283,14 @@
 	background-color: #d43761;
 	border:none;
 	color: white;
+	padding-top: 3px;
 }
 
 .button-wilz-empty{
 	background-color: transparent;
 	border:1px solid #d43761;
 	color: #d43761;
+	padding-top: 2px;
 }
 
 .ball-scale-multiple > div {
@@ -338,6 +342,10 @@
 
 .formulario-caravana{
 	margin-bottom: 0px;
+}
+/*Esconder barra de cicloruta de google maps*/
+.gm-style + div {
+    display: none;
 }
 
 @media(max-width: 320px){

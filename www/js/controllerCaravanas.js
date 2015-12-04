@@ -215,6 +215,28 @@ $scope.showConfirmStop = function() {
 	$scope.registrarSuscripcionCaravana = function(){
 		$http.defaults.headers.common['Authorization'] = "Token ".concat(ProfileService.getUserKey());
 
+		try{
+	      if($scope.caravanaActiva.direccion.trim() == ""){
+	      	$scope.errorLugarCaravanaMensaje = "Debe indicar su punto de reunión con la caravana";
+       		$scope.errorLugarCaravana = {'display':'block'};
+        	return false;
+	      }else{
+	      	$scope.errorLugarCaravana = {'display':'none'};
+	      }
+	 	}catch(err){
+	 		$scope.errorLugarCaravanaMensaje = "Debe indicar su punto de reunión con la caravana";
+       		$scope.errorLugarCaravana = {'display':'block'};
+        	return false;
+	 	}
+
+		try{
+	      if($scope.caravanaActiva.comentarios.trim() == ""){
+	      	$scope.caravanaActiva.comentarios = "-";
+	      }
+	 	}catch(err){
+		    $scope.caravanaActiva.comentarios = "-";
+	 	}
+
 		var req = {
 			method: 'POST',
 			xhrFields: { withCredentials: true },

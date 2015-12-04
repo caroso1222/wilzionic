@@ -10,7 +10,7 @@
         <div class = "row">
           <div class = "col col-25 fecha-div">
             <span class = "dia-caravana">{{caravana.dia}}{{caravana.mes}}</span>
-            <span class = "hora-caravana">{{caravana.hora}}:{{caravana.min}}AM</span>
+            <span class = "hora-caravana">{{caravana.hora}}:{{caravana.min}}</span>
           </div>
           <div class = "col col-75">
             <div class = "recorrido-div">
@@ -51,13 +51,17 @@
         <form ng-submit="registrarSuscripcionCaravana()">
       <div class="list">
         <label class="item item-input">
-          <input type="text" ng-model="caravanaActiva.direccion" placeholder = "¿Dónde te vas a unir a la caravana?" required>
+          <input type="text" ng-model="caravanaActiva.direccion" placeholder = "¿Dónde te vas a unir a la caravana?">
         </label>
         <label class="item item-input">
           <textarea placeholder = "Comentarios" ng-model="caravanaActiva.comentarios"></textarea>
         </label>
       </div>
-
+      <div class = "row error-lbl">
+            <div class = "col" ng-style="errorLugarCaravana" >
+              <span ng-bind="errorLugarCaravanaMensaje"></span> 
+            </div>
+      </div>
       <button class="button button-full button-balanced" type="submit">Listo</button>
 
       </form>

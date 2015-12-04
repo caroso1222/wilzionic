@@ -1,5 +1,7 @@
 angular.module('starter.controllers', [])
 
+
+
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
 
@@ -30,6 +32,10 @@ angular.module('starter.controllers', [])
     $scope.modal.show();
   };
 
+  
+})
+
+.controller('CiclorutasCtrl',function($scope){
   
 })
 
@@ -525,8 +531,8 @@ function timePickerCallback(val) {
       closeLabel: 'Cerrar',  //Optional
       setLabel: 'OK',  //Optional
       setButtonType : 'button-assertive',  //Optional
-      todayButtonType : 'button-assertive',  //Optional
-      closeButtonType : 'button-assertive',  //Optional
+      todayButtonType : 'button-outline button-assertive',  //Optional
+      closeButtonType : 'button-outline button-assertive',  //Optional
       mondayFirst: true,  //Optional
       weekDaysList: weekDaysList, //Optional
       monthList: monthList, //Optional
@@ -740,7 +746,7 @@ $scope.registrarPublicacionCaravana = function(){
 
   if($scope.mes != "not" && $scope.horas != "not"){
     $scope.errorFechaCaravana = {'display':'none'}; 
-    var fecha = $scope.anio.concat("-").concat($scope.mes).concat("-").concat($scope.dia).concat("T").concat($scope.horas).concat(":").concat($scope.minutos).concat(":00Z");
+    var fecha = $scope.anio.concat("-").concat($scope.mes).concat("-").concat($scope.dia).concat("T").concat($scope.horas).concat(":").concat($scope.minutos).concat(":00-05:00");
   }else{
     $scope.errorFechaCaravanaMensaje = "Debe seleccionar una fecha y una hora";
     $scope.errorFechaCaravana = {'display':'block'};
